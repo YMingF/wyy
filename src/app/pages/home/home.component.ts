@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {HomeService} from '../../service/home.service';
-import {Banner} from '../../service/data-types/common.types';
+import {Banner, HotTag, SongSheet} from '../../service/data-types/common.types';
 import {NzCarouselComponent} from 'ng-zorro-antd/carousel';
 
 @Component({
@@ -10,12 +10,32 @@ import {NzCarouselComponent} from 'ng-zorro-antd/carousel';
 })
 export class HomeComponent implements OnInit {
    carouselActiveIndex = 0;
-   banners: Banner[] = [];
+   banners: Banner[];
+   HotTags: HotTag[];
+   songSheetList: SongSheet[];
    @ViewChild(NzCarouselComponent, {static: true}) private nzCarousel: NzCarouselComponent;
 
    constructor(private homeService: HomeService) {
+      this.getBanners();
+      this.getHotTags();
+      this.getPersonalizedSheetList();
+   }
+
+   private getBanners() {
       this.homeService.getBanners().subscribe(banners => {
          this.banners = banners;
+      });
+   }
+
+   private getHotTags() {
+      this.homeService.getHotTags().subscribe(tags => {
+         this.HotTags = tags;
+      });
+   }
+
+   private getPersonalizedSheetList() {
+      this.homeService.getPersonalSheetList().subscribe(sheets => {
+         this.songSheetList = sheets;
       });
    }
 

@@ -4,13 +4,50 @@
         nzAutoPlay
         nzEffect="fade"
         [nzDotRender]="wyCarousel.dotRef"
-        (nzBeforeChange)="OnBeforeChange($event)"
-    >
+        (nzBeforeChange)="OnBeforeChange($event)">
       <div class="carousel-item" nz-carousel-content *ngFor="let item of banners">
         <a [href]="item.url" target="_blank" class="banner-item">
-          <img [src]="item.imageUrl"/>
+          <img appImgDefault [src]="item.imageUrl"/>
         </a>
       </div>
     </nz-carousel>
   </app-wy-carousel>
+
+  <div class="main">
+    <div class="wrap">
+      <div class="left">
+        <div class="sec">
+          <div class="up">
+            <div class="navs">
+              <h2>
+                <i></i>
+                <a>热门推荐</a>
+              </h2>
+              <nav>
+                <a *ngFor="let item of HotTags" routerLink="/sheet" [queryParams]="{cat: item.name}">{{item.name}}</a>
+              </nav>
+            </div>
+            <a routerLink="/sheet">
+              更多
+              <i nz-icon nzType="right" nzTheme="outline"></i>
+            </a>
+          </div>
+
+
+          <div class="down">
+            <div class="down-wrap">
+              <app-single-sheet
+                  class="sheet-item"
+                  *ngFor="let item of songSheetList"
+                  [sheet]="item">
+              </app-single-sheet>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right">
+      </div>
+    </div>
+  </div>
 </div>

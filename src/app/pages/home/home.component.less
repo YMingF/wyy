@@ -8,6 +8,10 @@
   }
 
   .main {
+    a {
+      color: black !important;
+    }
+
     .wrap {
       display: flex;
       justify-content: space-between;
@@ -32,6 +36,7 @@
               display: flex;
               align-items: flex-end;
 
+
               h2 {
                 font-size: @font-size-lgs;
 
@@ -48,6 +53,8 @@
                   border-radius: 50%;
                   margin-right: 10px;
                 }
+
+                margin-bottom: 0;
               }
 
               nav {
@@ -55,7 +62,7 @@
                   display: inline-block;
                   padding: 0 12px;
                   border-right: 1px solid @border-color-base;
-                  //margin-left: 15px;
+
                   &:last-child {
                     border-right: none;
                   }
