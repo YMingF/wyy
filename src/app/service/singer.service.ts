@@ -1,13 +1,14 @@
 import {Inject, Injectable} from '@angular/core';
 import {API_CONFIG, ServiceModule} from './service.module';
-import {map, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Singer} from './data-types/common.types';
 
 type SingerParams = {
-   offset: number,
-   limit: number,
-   cat?: string
+  offset: number,
+  limit: number,
+  cat?: string
 }
 
 const defaultParams: SingerParams = {

@@ -3,7 +3,8 @@ import {Resolve} from '@angular/router';
 import {HomeService} from '../../service/home.service';
 import {SingerService} from '../../service/singer.service';
 import {Banner, HotTag, Singer, SongSheet} from '../../service/data-types/common.types';
-import {first, forkJoin, Observable, take} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
+import {first} from 'rxjs/operators';
 
 type HomeDataType = [Banner[], HotTag[], Singer[], SongSheet[]]
 

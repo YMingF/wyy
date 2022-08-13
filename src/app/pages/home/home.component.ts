@@ -4,7 +4,7 @@ import {Banner, HotTag, Singer, SongSheet} from '../../service/data-types/common
 import {NzCarouselComponent} from 'ng-zorro-antd/carousel';
 import {SingerService} from '../../service/singer.service';
 import {ActivatedRoute} from '@angular/router';
-import {map} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
