@@ -35,3 +35,9 @@ export type SongSheet = {
   playCount: number;
   tracks: Song[]; // 歌单下的所有歌曲
 }
+
+// 歌曲地址
+export type SongUrl = {
+  id: number;
+  url: string;
+}
