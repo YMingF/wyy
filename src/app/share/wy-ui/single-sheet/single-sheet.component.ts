@@ -20,8 +20,4 @@ export class SingleSheetComponent implements OnInit {
       evt.stopPropagation();
       this.onPlay.emit(id);
    }
-
-   // get coverImg(): string {
-   //    // return this.sheet.picUrl || this.sheet.coverImgUrl;
-   // }
 }
