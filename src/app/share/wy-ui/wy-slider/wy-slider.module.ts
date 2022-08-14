@@ -10,7 +10,8 @@ import {WySliderHandleComponent} from './wy-slider-handle.component';
   imports: [
     CommonModule
   ],
-  exports: [WySliderComponent]
+  exports: [WySliderComponent],
+  providers: [{provide: Document}]
 })
 export class WySliderModule {
 }
