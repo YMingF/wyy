@@ -5,6 +5,7 @@ import {NzMenuModule} from 'ng-zorro-antd/menu';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzLayoutModule} from 'ng-zorro-antd/layout';
 import {NzIconModule} from 'ng-zorro-antd/icon';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
    declarations: [
@@ -15,7 +16,8 @@ import {NzIconModule} from 'ng-zorro-antd/icon';
       NzMenuModule,
       NzInputModule,
       NzLayoutModule,
-      NzIconModule
+      NzIconModule,
+     FormsModule
    ],
    bootstrap: [AppComponent]
 })

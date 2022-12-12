@@ -14,7 +14,9 @@ export interface SliderEventObserverConfig {
   end: string;
   filter: (e: Event) => boolean;
   pluckKey: string[];
-  startPlucked$?:Observable<number>,
+  startPlucked$?: Observable<number>,
   moveResolved$?: Observable<number>;
   end$?: Observable<Event>;
 }
+
+export type SliderValue = number | null

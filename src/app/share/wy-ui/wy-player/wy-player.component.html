@@ -27,10 +27,10 @@
         </div>
         <div class="bar">
           <div class="slider-wrap">
-            <app-wy-slider></app-wy-slider>
+            <app-wy-slider [(ngModel)]="sliderVal"></app-wy-slider>
           </div>
           <span class="time">
-            <em>0:00</em> / 04:10
+            <em>0:00</em> / {{sliderVal}}
           </span>
         </div>
       </div>
