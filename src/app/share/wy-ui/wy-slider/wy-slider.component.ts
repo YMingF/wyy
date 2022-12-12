@@ -166,11 +166,10 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
 
   private setValue(value: SliderValue, needCheck = false) {
     if (needCheck) {
-      if (!this.isDragging) return; // 拖拽时就不检查值的合法性
+      if (this.isDragging) return; // 拖拽时就不检查值的合法性
       this.value = this.formatValue(value);
       this.updateTrackAndHandles();
-    }
-    if (!this.valuesEqual(this.value, value)) {
+    } else if (!this.valuesEqual(this.value, value)) {
       this.value = value;
       this.updateTrackAndHandles();
       this.onValueChange(this.value);
