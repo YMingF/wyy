@@ -24,7 +24,8 @@ export class HomeComponent implements OnInit {
     private homeService: HomeService,
     private singerService: SingerService,
     private route: ActivatedRoute,
-    private sheetService: SheetService) {
+    private sheetService: SheetService
+  ) {
     this.route.data.pipe(map(res => res['homeData'])).subscribe(([banners, tags, sheets, singer]) => {
       this.banners = banners;
       this.HotTags = tags;
