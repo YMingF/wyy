@@ -16,15 +16,15 @@ registerLocaleData(zh);
 @NgModule({
    declarations: [],
    imports: [
-      CommonModule,
-      BrowserModule,
-      HttpClientModule,
-      BrowserAnimationsModule,
-      ServiceModule,
-      PagesModule,
-      ShareModule,
-      AppRoutingModule,
-     AppStoreModule
+   CommonModule,
+   BrowserModule,
+   HttpClientModule,
+   BrowserAnimationsModule,
+   ServiceModule,
+   PagesModule,
+   ShareModule,
+   AppRoutingModule,
+   AppStoreModule
    ],
    providers: [{provide: NZ_I18N, useValue: zh_CN}],
    exports: [
@@ -35,7 +35,7 @@ registerLocaleData(zh);
 export class CoreModule {
    constructor(@SkipSelf() @Optional() parentModule: CoreModule) {
       if (parentModule) {
-         throw  new Error('CoreModule只能被appModule引入');
+        throw  new Error('CoreModule只能被appModule引入');
       }
    }
 }

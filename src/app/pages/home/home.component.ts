@@ -6,6 +6,9 @@ import {SingerService} from '../../service/singer.service';
 import {ActivatedRoute} from '@angular/router';
 import {map} from 'rxjs/operators';
 import {SheetService} from '../../service/sheet.service';
+import {Store} from '@ngrx/store';
+import {AppStoreModule} from '../../store';
+import {SetCurrentIndex, SetPlayList, SetSongList} from '../../store/actions/player.action';
 
 @Component({
   selector: 'app-home',
@@ -24,7 +27,8 @@ export class HomeComponent implements OnInit {
     private homeService: HomeService,
     private singerService: SingerService,
     private route: ActivatedRoute,
-    private sheetService: SheetService
+    private sheetService: SheetService,
+    private store$: Store<AppStoreModule>
   ) {
     this.route.data.pipe(map(res => res['homeData'])).subscribe(([banners, tags, sheets, singer]) => {
       this.banners = banners;
@@ -47,8 +51,10 @@ export class HomeComponent implements OnInit {
   }
 
   onPlaySheet(id: number) {
-    this.sheetService.playSheet(id).subscribe(data => {
-      console.log(data);
+    this.sheetService.playSheet(id).subscribe(list => {
+      this.store$.dispatch(SetSongList({songList: list}));
+      this.store$.dispatch(SetPlayList({playList: list}));
+      this.store$.dispatch(SetCurrentIndex({currentIndex: 0}));
     });
   }
 }

@@ -52,5 +52,5 @@
     </div>
   </div>
 
-
+  <audio #audioEl [src]="currentSong?.url" (canplay)="onCanplay()"></audio>
 </div>

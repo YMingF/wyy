@@ -32,13 +32,14 @@ export const initialState: PlayState = {
 
 const reducer = createReducer(
   initialState,
+  // 注册动作
   on(SetPlaying, (state, {playing}) => ({...state, playing})),
   on(SetPlayList, (state, {playList}) => ({...state, playList})),
   on(SetSongList, (state, {songList}) => ({...state, songList})),
   on(SetPlayMode, (state, {playMode}) => ({...state, playMode})),
   on(SetCurrentIndex, (state, {currentIndex}) => ({...state, currentIndex}))
 );
-
+// 固定写法，只不过导出的函数名可以自己取
 export function playerReducer(state: PlayState, action: Action) {
   return reducer(state, action);
 }
