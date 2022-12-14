@@ -21,6 +21,9 @@ export class WyPlayerComponent implements OnInit {
   playList: Song[];
   currentIndex: number;
   currentSong: Song;
+  duration: number;
+  currentTime: number;
+
   @ViewChild('audioEl', {static: true}) audio: ElementRef;
   private audioEl: HTMLAudioElement;
 
@@ -53,8 +56,10 @@ export class WyPlayerComponent implements OnInit {
   }
 
   watchCurrentSong(song: Song) {
-    this.currentSong = song;
-    console.log(this.currentSong);
+    if (song) {
+      this.currentSong = song;
+      this.duration = this.currentSong.dt / 1000;// dt属性的值为歌曲总时长,单位为毫秒
+    }
   }
 
   onCanplay() {
@@ -67,7 +72,15 @@ export class WyPlayerComponent implements OnInit {
 
   ngOnInit() {
     this.audioEl = this.audio.nativeElement;
-    console.log(this.audio.nativeElement);
   }
+
+  onTimeUpdate(e: Event) {
+    this.currentTime = (<HTMLAudioElement>e.target).currentTime;
+  }
+
+  get picUrl(): string {
+    return this.currentSong ? this.currentSong.al.picUrl : '//s4.music.126.net/style/web2/img/default/default_album.jpg';
+  }
+
 
 }
