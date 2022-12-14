@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {AppStoreModule} from '../../../store';
 import {select, Store} from '@ngrx/store';
 import {
@@ -9,6 +9,8 @@ import {
 } from '../../../store/selectors/player.selector';
 import {Song} from '../../../service/data-types/common.types';
 import {SetCurrentIndex} from '../../../store/actions/player.action';
+import {fromEvent, Subscription} from 'rxjs';
+import {DOCUMENT} from '@angular/common';
 
 @Component({
   selector: 'app-wy-player',
@@ -24,6 +26,13 @@ export class WyPlayerComponent implements OnInit {
   currentSong: Song;
   duration: number;
   currentTime: number;
+  volume = 60;// 音量
+  //是否展示播放面板
+  showVolumePanel = false;
+  // 是否点击音量面板本身
+  selfClick = false;
+
+  winClick: Subscription;//window的click事件
   // 播放状态
   playing = false;
   //是否可以播放
@@ -32,7 +41,8 @@ export class WyPlayerComponent implements OnInit {
   private audioEl: HTMLAudioElement;
 
   constructor(
-    private store$: Store<AppStoreModule>
+    private store$: Store<AppStoreModule>,
+    @Inject(DOCUMENT) private doc: Document
   ) {
     const stateArr = [
       {type: getSongList, cb: list => this.watchList(list, 'songList')},
@@ -65,8 +75,6 @@ export class WyPlayerComponent implements OnInit {
     if (song) {
       this.currentSong = song;
       this.duration = this.currentSong.dt / 1000;// dt属性的值为歌曲总时长,单位为毫秒
-      console.log('此时的歌');
-      console.log(song);
     }
   }
 
@@ -134,6 +142,7 @@ export class WyPlayerComponent implements OnInit {
     this.percent = (this.currentTime / this.duration) * 100;
     const buffered = this.audioEl.buffered;
     if (buffered.length && this.bufferPercent < 100) {
+      // buffered.end(0)表示缓冲区域结束的位置，是一个时间
       this.bufferPercent = (buffered.end(0) / this.duration) * 100;
     }
   }
@@ -143,7 +152,42 @@ export class WyPlayerComponent implements OnInit {
   }
 
   onPercentChange(per) {
-    this.audioEl.currentTime = this.duration * (per / 100);
+    if (this.currentSong) {
+      this.audioEl.currentTime = this.duration * (per / 100);
+    }
   }
 
+  onVolumeChange(per: number) {
+    // audio标签的音量范围是0-1，而per的值是0-100
+    this.audioEl.volume = per / 100;
+  }
+
+  // 控制音量面板是否展示
+  toggleVolPanel(event: MouseEvent) {
+    this.showVolumePanel = !this.showVolumePanel;
+    if (this.showVolumePanel) {
+      this.bindDocumentClickListener();
+    } else {
+      this.unbindDocumentClickListener();
+    }
+  }
+
+  bindDocumentClickListener() {
+    if (!this.winClick) {
+      this.winClick = fromEvent(this.doc, 'click').subscribe(() => {
+        if (!this.selfClick) { // 说明点击了播放器以外区域
+          this.showVolumePanel = false;
+          this.unbindDocumentClickListener();
+        }
+        this.selfClick = false;
+      });
+    }
+  }
+
+  unbindDocumentClickListener() {
+    if (this.winClick) {
+      this.winClick.unsubscribe();
+      this.winClick = null;
+    }
+  }
 }
