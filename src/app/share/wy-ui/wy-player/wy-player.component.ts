@@ -16,8 +16,8 @@ import {SetCurrentIndex} from '../../../store/actions/player.action';
   styleUrls: ['./wy-player.component.less']
 })
 export class WyPlayerComponent implements OnInit {
-  sliderVal = 35;
-  bufferOffset = 80;
+  percent = 0;
+  bufferPercent = 0;
   songList: Song[];
   playList: Song[];
   currentIndex: number;
@@ -131,11 +131,19 @@ export class WyPlayerComponent implements OnInit {
 
   onTimeUpdate(e: Event) {
     this.currentTime = (<HTMLAudioElement>e.target).currentTime;
+    this.percent = (this.currentTime / this.duration) * 100;
+    const buffered = this.audioEl.buffered;
+    if (buffered.length && this.bufferPercent < 100) {
+      this.bufferPercent = (buffered.end(0) / this.duration) * 100;
+    }
   }
 
   get picUrl(): string {
     return this.currentSong ? this.currentSong.al.picUrl : '//s4.music.126.net/style/web2/img/default/default_album.jpg';
   }
 
+  onPercentChange(per) {
+    this.audioEl.currentTime = this.duration * (per / 100);
+  }
 
 }
