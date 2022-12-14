@@ -8,6 +8,7 @@ import {
   getSongList
 } from '../../../store/selectors/player.selector';
 import {Song} from '../../../service/data-types/common.types';
+import {SetCurrentIndex} from '../../../store/actions/player.action';
 
 @Component({
   selector: 'app-wy-player',
@@ -23,7 +24,10 @@ export class WyPlayerComponent implements OnInit {
   currentSong: Song;
   duration: number;
   currentTime: number;
-
+  // 播放状态
+  playing = false;
+  //是否可以播放
+  songReady = false;
   @ViewChild('audioEl', {static: true}) audio: ElementRef;
   private audioEl: HTMLAudioElement;
 
@@ -45,6 +49,8 @@ export class WyPlayerComponent implements OnInit {
 
   watchList(list, type: string) {
     this[type] = list;
+    console.log('list');
+    console.log(list);
   }
 
   watchCurrentIndex(index: number) {
@@ -59,15 +65,64 @@ export class WyPlayerComponent implements OnInit {
     if (song) {
       this.currentSong = song;
       this.duration = this.currentSong.dt / 1000;// dt属性的值为歌曲总时长,单位为毫秒
+      console.log('此时的歌');
+      console.log(song);
     }
   }
 
   onCanplay() {
     this.play();
+    this.songReady = true;
+  }
+
+  // 播放/暂停
+  onToggle() {
+    if (!this.currentSong) { // 这里用来表示只添加歌单，但不播放的场景
+      if (this.playList.length) { // 若没点击播放，但此时播放列表不为空的话，就默认播放第一首
+        this.store$.dispatch(SetCurrentIndex({currentIndex: 0}));
+        this.songReady = false;
+      }
+    } else {
+      if (this.songReady) {
+        this.playing = !this.playing;
+        this.playing ? this.audioEl.play() : this.audioEl.pause();
+      }
+    }
+  }
+
+  onPrev() {
+    if (!this.songReady) return;
+    if (this.playList.length === 1) {
+      this.loop();
+    } else {
+      this.currentIndex = this.currentIndex === 0 ? this.playList.length - 1 : this.currentIndex - 1;
+      this.updateIndex(this.currentIndex);
+    }
+  }
+
+  onNext() {
+    if (!this.songReady) return;
+    if (this.playList.length === 1) {
+      this.loop();
+    } else {
+      this.currentIndex = this.currentIndex === this.playList.length - 1 ? 0 : this.currentIndex + 1;
+      this.updateIndex(this.currentIndex);
+    }
+  }
+
+  loop() {
+    this.audioEl.currentTime = 0;
+    this.play();
   }
 
   play() {
     this.audioEl.play();
+    this.playing = true;
+  }
+
+  updateIndex(index: number) {
+    this.store$.dispatch(SetCurrentIndex({currentIndex: index}));
+    this.songReady = false;
   }
 
   ngOnInit() {
