@@ -35,11 +35,12 @@ export class WyPlayerComponent implements OnInit {
   duration: number;
   currentTime: number;
   volume = 60;// 音量
-  //是否展示播放面板
+  //是否展示音量面板
   showVolumePanel = false;
   // 是否点击音量面板本身
   selfClick = false;
-
+  //是否展示列表面板
+  showPanel = false;
   winClick: Subscription;//window的click事件
   // 播放状态
   playing = false;
@@ -203,8 +204,19 @@ export class WyPlayerComponent implements OnInit {
 
   // 控制音量面板是否展示
   toggleVolPanel() {
-    this.showVolumePanel = !this.showVolumePanel;
-    if (this.showVolumePanel) {
+    this.togglePanel('showVolumePanel');
+  }
+
+  // 控制列表面板展示
+  toggleListPanel() {
+    if (this.songList.length) {
+      this.togglePanel('showPanel');
+    }
+  }
+
+  togglePanel(type: string) {
+    this[type] = !this[type];
+    if (this.showVolumePanel || this.showPanel) {
       this.bindDocumentClickListener();
     } else {
       this.unbindDocumentClickListener();
@@ -216,6 +228,7 @@ export class WyPlayerComponent implements OnInit {
       this.winClick = fromEvent(this.doc, 'click').subscribe(() => {
         if (!this.selfClick) { // 说明点击了播放器以外区域
           this.showVolumePanel = false;
+          this.showPanel = false;
           this.unbindDocumentClickListener();
         }
         this.selfClick = false;
@@ -233,5 +246,9 @@ export class WyPlayerComponent implements OnInit {
   // 改变模式
   changeMode() {
     this.store$.dispatch(SetPlayMode({playMode: modeTypes[++this.modeCount % 3]}));
+  }
+
+  onChangeSong(song: Song) {
+    this.updateCurrentIndex(this.playList, song);
   }
 }
