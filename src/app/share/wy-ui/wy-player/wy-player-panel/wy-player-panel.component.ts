@@ -23,16 +23,43 @@ export class WyPlayerPanelComponent implements OnInit {
   @Output() onClose = new EventEmitter<void>();
   @Output() onChangeSong = new EventEmitter<Song>();
   @ViewChildren(WyScrollComponent) private wyScroll: QueryList<WyScrollComponent>;
+  scrollY = 0;
+
   constructor() {
+  }
+
+  scrollToCurrent() {
+    const songListRefs = this.wyScroll.first.el.nativeElement.querySelectorAll('ul li');
+    if (songListRefs.length) {
+      const currentLi = songListRefs[this.currentIndex || 0];
+      const offsetTop = currentLi.offsetTop;
+      const offsetHeight = currentLi.offsetHeight;
+      console.log('scrollData');
+      console.log(offsetTop);
+      console.log(this.scrollY);
+      if ((offsetTop - Math.abs(this.scrollY) > offsetHeight * 5) || (offsetTop < Math.abs(this.scrollY))) {
+        this.wyScroll.first.scrollToElement(currentLi, 300, false, false);
+      }
+    }
   }
 
   ngOnInit() {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if (changes['currentSong']) {
+      if (this.currentSong && this.show) {
+        this.scrollToCurrent();
+      }
+    }
     if (changes['show']) {
       if (!changes['show'].firstChange && this.show) {
         this.wyScroll.first.refreshScroll();
+        if (this.currentSong) {
+          setTimeout(() => {
+            this.scrollToCurrent();
+          }, 80);
+        }
       }
     }
   }

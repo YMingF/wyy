@@ -3,7 +3,7 @@ import {
   OnInit,
   ViewEncapsulation,
   ChangeDetectionStrategy,
-  ViewChild, ElementRef, AfterViewInit, Input, SimpleChanges
+  ViewChild, ElementRef, AfterViewInit, Input, SimpleChanges, Output, EventEmitter
 } from '@angular/core';
 import BScroll from '@better-scroll/core';
 import ScrollBar from '@better-scroll/scroll-bar';
@@ -32,9 +32,10 @@ BScroll.use(MouseWheel);
 export class WyScrollComponent implements OnInit, AfterViewInit {
   @Input() data: any[];
   @ViewChild('wrap', {static: true}) private wrapRef: ElementRef;
+  @Output() private onScrollEnd = new EventEmitter<number>();
   private bs: BScroll;
 
-  constructor() {
+  constructor(readonly el: ElementRef) {
   }
 
   ngOnInit() {
@@ -50,6 +51,8 @@ export class WyScrollComponent implements OnInit, AfterViewInit {
         easeTime: 300
       }
     });
+    // 获取滚动条已滚动距离
+    this.bs.on('scrollEnd', ({y}) => this.onScrollEnd.emit(y));
   }
 
   refresh() {
@@ -62,6 +65,10 @@ export class WyScrollComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.refresh();
     }, 50);
+  }
+
+  scrollToElement(...args) {
+    this.bs.scrollToElement.apply(this.bs, args);
   }
 
   ngOnChanges(changes: SimpleChanges) {
