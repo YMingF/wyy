@@ -68,6 +68,12 @@ export class WyScrollComponent implements OnInit, AfterViewInit {
   }
 
   scrollToElement(...args) {
+    /*scrollToElement(el, time, offsetX, offsetY, easing)
+    * el：滚动到的目标元素
+    * time 滚动动画执行的时长（单位 ms）
+    * 后面这两个参数一般都设置成false
+    * offsetX 相对于目标元素的横轴偏移量，如果设置为 true，则滚到目标元素的中心位置
+    *  offsetY 相对于目标元素的纵轴偏移量，如果设置为 true，则滚到目标元素的中心位置 */
     this.bs.scrollToElement.apply(this.bs, args);
   }
 
