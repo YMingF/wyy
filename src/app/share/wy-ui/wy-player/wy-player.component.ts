@@ -8,9 +8,17 @@ import {
   getSongList
 } from '../../../store/selectors/player.selector';
 import {Song} from '../../../service/data-types/common.types';
-import {SetCurrentIndex} from '../../../store/actions/player.action';
+import {SetCurrentIndex, SetPlayList, SetPlayMode} from '../../../store/actions/player.action';
 import {fromEvent, Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
+import {PlayMode} from './player-type';
+import {shuffle} from '../../../utils/array';
+
+const modeTypes: PlayMode[] = [
+  {type: 'loop', label: '循环'},
+  {type: 'random', label: '随机'},
+  {type: 'singleLoop', label: '单曲循环'}
+];
 
 @Component({
   selector: 'app-wy-player',
@@ -37,6 +45,9 @@ export class WyPlayerComponent implements OnInit {
   playing = false;
   //是否可以播放
   songReady = false;
+  // 当前模式
+  currentMode: PlayMode;
+  modeCount = 0;
   @ViewChild('audioEl', {static: true}) audio: ElementRef;
   private audioEl: HTMLAudioElement;
 
@@ -69,6 +80,16 @@ export class WyPlayerComponent implements OnInit {
 
   watchPlayMode(mode) {
     console.log('mode', mode);
+    this.currentMode = mode;
+    if (this.songList) {
+      let list = this.songList.slice();
+      if (mode.type === 'random') {
+        list = shuffle(list);
+        this.store$.dispatch(SetPlayList({playList: list}));
+        this.updateCurrentIndex(list, this.currentSong);
+      }
+    }
+
   }
 
   watchCurrentSong(song: Song) {
@@ -78,9 +99,24 @@ export class WyPlayerComponent implements OnInit {
     }
   }
 
+  // 随机模式下，歌曲顺序改变，但当前播放的歌不变
+  updateCurrentIndex(list: Song[], currentSong: Song) {
+    const newIndex = list.findIndex(song => song.id === currentSong.id);
+    this.store$.dispatch(SetCurrentIndex({currentIndex: newIndex}));
+  }
+
   onCanplay() {
     this.play();
     this.songReady = true;
+  }
+
+  onEnded() {
+    this.playing = false;
+    if (this.currentMode.type === 'singleLoop') {
+      this.loop();
+    } else {
+      this.onNext();
+    }
   }
 
   // 播放/暂停
@@ -98,6 +134,7 @@ export class WyPlayerComponent implements OnInit {
     }
   }
 
+// 播放上一首
   onPrev() {
     if (!this.songReady) return;
     if (this.playList.length === 1) {
@@ -108,6 +145,7 @@ export class WyPlayerComponent implements OnInit {
     }
   }
 
+  // 播放下一首
   onNext() {
     if (!this.songReady) return;
     if (this.playList.length === 1) {
@@ -118,6 +156,7 @@ export class WyPlayerComponent implements OnInit {
     }
   }
 
+  // 单曲循环
   loop() {
     this.audioEl.currentTime = 0;
     this.play();
@@ -163,7 +202,7 @@ export class WyPlayerComponent implements OnInit {
   }
 
   // 控制音量面板是否展示
-  toggleVolPanel(event: MouseEvent) {
+  toggleVolPanel() {
     this.showVolumePanel = !this.showVolumePanel;
     if (this.showVolumePanel) {
       this.bindDocumentClickListener();
@@ -189,5 +228,10 @@ export class WyPlayerComponent implements OnInit {
       this.winClick.unsubscribe();
       this.winClick = null;
     }
+  }
+
+  // 改变模式
+  changeMode() {
+    this.store$.dispatch(SetPlayMode({playMode: modeTypes[++this.modeCount % 3]}));
   }
 }
