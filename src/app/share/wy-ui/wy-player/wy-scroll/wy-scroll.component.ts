@@ -8,6 +8,7 @@ import {
 import BScroll from '@better-scroll/core';
 import ScrollBar from '@better-scroll/scroll-bar';
 import MouseWheel from '@better-scroll/mouse-wheel';
+import {timer} from 'rxjs';
 
 // @ts-ignore
 BScroll.use(ScrollBar);
@@ -62,9 +63,9 @@ export class WyScrollComponent implements OnInit, AfterViewInit {
 
   // 类似Vue中nextTick的考虑，需要等dom更新之后，你再去重置你的滚动条。
   refreshScroll() {
-    setTimeout(() => {
+    timer(50).subscribe(() => {
       this.refresh();
-    }, 50);
+    });
   }
 
   scrollToElement(...args) {

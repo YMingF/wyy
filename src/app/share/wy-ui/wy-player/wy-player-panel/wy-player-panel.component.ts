@@ -10,6 +10,7 @@ import {
 import {Song} from '../../../../service/data-types/common.types';
 import {WyScrollComponent} from '../wy-scroll/wy-scroll.component';
 import {findSongIndex} from '../../../../utils/array';
+import {timer} from 'rxjs';
 
 @Component({
   selector: 'app-wy-player-panel',
@@ -55,9 +56,9 @@ export class WyPlayerPanelComponent implements OnInit {
       if (!changes['show'].firstChange && this.show) {
         this.wyScroll.first.refreshScroll();
         if (this.currentSong) {
-          setTimeout(() => {
+          timer(80).subscribe(() => {
             this.scrollToCurrent(0);
-          }, 80);
+          });
         }
       }
     }
