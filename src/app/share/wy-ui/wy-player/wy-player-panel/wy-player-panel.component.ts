@@ -11,6 +11,7 @@ import {Song} from '../../../../service/data-types/common.types';
 import {WyScrollComponent} from '../wy-scroll/wy-scroll.component';
 import {findSongIndex} from '../../../../utils/array';
 import {timer} from 'rxjs';
+import {SongService} from '../../../../service/song.service';
 
 @Component({
   selector: 'app-wy-player-panel',
@@ -26,8 +27,7 @@ export class WyPlayerPanelComponent implements OnInit {
   @Output() onChangeSong = new EventEmitter<Song>();
   @ViewChildren(WyScrollComponent) private wyScroll: QueryList<WyScrollComponent>;
   scrollY = 0;
-
-  constructor() {
+  constructor(private songService: SongService) {
   }
 
   scrollToCurrent(speed=300) {
@@ -47,10 +47,14 @@ export class WyPlayerPanelComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['currentSong']) {
-      this.currentIndex = findSongIndex(this.songList, this.currentSong);
-      if (this.currentSong && this.show) {
-        this.scrollToCurrent();
+      if (this.currentSong) {
+        this.currentIndex = findSongIndex(this.songList, this.currentSong);
+        this.updateLyric();
+        if (this.show) {
+          this.scrollToCurrent();
+        }
       }
+
     }
     if (changes['show']) {
       if (!changes['show'].firstChange && this.show) {
@@ -64,4 +68,10 @@ export class WyPlayerPanelComponent implements OnInit {
     }
   }
 
+  updateLyric() {
+    this.songService.getLyric(this.currentSong.id).subscribe(lyric=>{
+      console.log('歌词');
+      console.log(lyric);
+    })
+  }
 }

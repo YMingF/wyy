@@ -41,3 +41,8 @@ export type SongUrl = {
   id: number;
   url: string;
 }
+// 歌词
+export type Lyric = {
+  lrc: string,
+  tlyric: string
+}
