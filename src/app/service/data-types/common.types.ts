@@ -43,6 +43,6 @@ export type SongUrl = {
 }
 // 歌词
 export type Lyric = {
-  lrc: string,
+  lyric: string,
   tlyric: string
 }
