@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import {Song} from '../../../../service/data-types/common.types';
 import {WyScrollComponent} from '../wy-scroll/wy-scroll.component';
+import {findSongIndex} from '../../../../utils/array';
 
 @Component({
   selector: 'app-wy-player-panel',
@@ -18,7 +19,7 @@ import {WyScrollComponent} from '../wy-scroll/wy-scroll.component';
 export class WyPlayerPanelComponent implements OnInit {
   @Input() songList: Song[];
   @Input() currentSong: Song;
-  @Input() currentIndex: number;
+  currentIndex: number;
   @Input() show: boolean;
   @Output() onClose = new EventEmitter<void>();
   @Output() onChangeSong = new EventEmitter<Song>();
@@ -28,17 +29,14 @@ export class WyPlayerPanelComponent implements OnInit {
   constructor() {
   }
 
-  scrollToCurrent() {
+  scrollToCurrent(speed=300) {
     const songListRefs = this.wyScroll.first.el.nativeElement.querySelectorAll('ul li');
     if (songListRefs.length) {
       const currentLi = songListRefs[this.currentIndex || 0];
       const offsetTop = currentLi.offsetTop;
       const offsetHeight = currentLi.offsetHeight;
-      console.log('scrollData');
-      console.log(offsetTop);
-      console.log(this.scrollY);
       if ((offsetTop - Math.abs(this.scrollY) > offsetHeight * 5) || (offsetTop < Math.abs(this.scrollY))) {
-        this.wyScroll.first.scrollToElement(currentLi, 300, false, false);
+        this.wyScroll.first.scrollToElement(currentLi, speed, false, false);
       }
     }
   }
@@ -48,6 +46,7 @@ export class WyPlayerPanelComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['currentSong']) {
+      this.currentIndex = findSongIndex(this.songList, this.currentSong);
       if (this.currentSong && this.show) {
         this.scrollToCurrent();
       }
@@ -57,7 +56,7 @@ export class WyPlayerPanelComponent implements OnInit {
         this.wyScroll.first.refreshScroll();
         if (this.currentSong) {
           setTimeout(() => {
-            this.scrollToCurrent();
+            this.scrollToCurrent(0);
           }, 80);
         }
       }

@@ -13,6 +13,7 @@ import {fromEvent, Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
 import {PlayMode} from './player-type';
 import {shuffle} from '../../../utils/array';
+import {PlayState} from '../../../store/reducers/player.reducer';
 
 const modeTypes: PlayMode[] = [
   {type: 'loop', label: '循环'},
@@ -26,6 +27,7 @@ const modeTypes: PlayMode[] = [
   styleUrls: ['./wy-player.component.less']
 })
 export class WyPlayerComponent implements OnInit {
+  @ViewChild('audioEl', {static: true}) audio: ElementRef;
   percent = 0;
   bufferPercent = 0;
   songList: Song[];
@@ -49,9 +51,7 @@ export class WyPlayerComponent implements OnInit {
   // 当前模式
   currentMode: PlayMode;
   modeCount = 0;
-  @ViewChild('audioEl', {static: true}) audio: ElementRef;
   private audioEl: HTMLAudioElement;
-
   constructor(
     private store$: Store<AppStoreModule>,
     @Inject(DOCUMENT) private doc: Document
