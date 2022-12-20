@@ -15,7 +15,7 @@ interface Handler extends BaseLyricLine {
   lineNum: number; // 当前歌词的行索引
 }
 
-const timeExp = /\[(\d{2}):(\d{2}).(\d{2,3})\]/g;
+const timeExp = /\[(\d{2}):(\d{2}).(\d{2,3})\]/;
 
 export class WyLyric {
   private lrc: Lyric;
