@@ -1,17 +1,32 @@
 import {Lyric} from '../../../../service/data-types/common.types';
-import {from, zip} from 'rxjs';
+import {from, Subject, Subscription, timer, zip} from 'rxjs';
 import {skip} from 'rxjs/operators';
 
-export type LyricLine = {
+interface BaseLyricLine {
   txt: string,
   txtCn: string,
-  time: number //每行歌词对应的时间
 }
+
+export interface LyricLine extends BaseLyricLine {
+  time: number; //每行歌词对应的时间
+}
+
+interface Handler extends BaseLyricLine {
+  lineNum: number; // 当前歌词的行索引
+}
+
 const timeExp = /\[(\d{2}):(\d{2}).(\d{2,3})\]/g;
 
 export class WyLyric {
   private lrc: Lyric;
   lines: LyricLine[] = [];// 处理之后的歌词
+  private playing = false;
+  private curNum: number;
+  startStamp: number;
+  pauseStamp: number;
+  handler = new Subject<Handler>();
+  private timer$: Subscription;
+
   constructor(lrc: Lyric) {
     this.lrc = lrc;
     this.init();
@@ -42,14 +57,15 @@ export class WyLyric {
     const lines = this.lrc.lyric.split('\n');
     // 只留下以时间开头的字符，方便后续和lyric同时间的字符对应起来
     const tlines = this.lrc.tlyric.split('\n').filter(item => timeExp.exec(item) !== null);
-    let tempArr = [];
+    let tempArr;
     const lineLenDiff = lines.length - tlines.length;
     if (lineLenDiff >= 0) {
       tempArr = [lines, tlines];
     } else {
       tempArr = [tlines, lines];
     }
-    const first = timeExp.exec(tempArr[1][0])[0];
+    const res = timeExp.exec(tempArr[1][0]);
+    const first = res[0];
     let skipIndex = 0;
     for (const index in tempArr[0]) {
       if (tempArr[0][index].trim().startsWith(first)) {
@@ -81,5 +97,78 @@ export class WyLyric {
         this.lines.push({txt, txtCn, time});
       }
     }
+  }
+
+  play(startTime = 0, skip = false) {
+    if (!this.lines.length) {
+      return;
+    }
+    if (!this.playing) {
+      this.playing = true;
+    }
+
+    this.curNum = this.findCurNum(startTime);
+    this.startStamp = Date.now() - startTime;
+    if (!skip) {
+      this.callHandler(this.curNum - 1);
+    }
+
+    if (this.curNum < this.lines.length) {
+      this.clearTimer();
+      this.playReset();
+    }
+
+  }
+
+  private playReset() {
+    const line = this.lines[this.curNum];
+    const delay = line.time - (Date.now() - this.startStamp);
+    this.timer$ = timer(delay).subscribe(() => {
+      this.callHandler(this.curNum++);
+      if (this.curNum < this.lines.length && this.playing) {
+        this.playReset();
+      }
+    });
+  }
+
+  private clearTimer() {
+    this.timer$ && this.timer$.unsubscribe();
+  }
+
+
+  private callHandler(i: number) {
+    console.log('lineNum', i);
+    if (i > 0) {
+      this.handler.next({
+        txt: this.lines[i].txt,
+        txtCn: this.lines[i].txtCn,
+        lineNum: i
+      });
+    }
+  }
+
+
+  private findCurNum(time: number): number {
+    const index = this.lines.findIndex(item => time <= item.time);
+    return index === -1 ? this.lines.length - 1 : index;
+  }
+
+  togglePlay(playing: boolean) {
+    const now = Date.now();
+    this.playing = playing;
+    if (playing) {
+      const startTime = (this.pauseStamp || now) - (this.startStamp || now);
+      this.play(startTime, true);
+    } else {
+      this.stop();
+      this.pauseStamp = now;
+    }
+  }
+
+  stop() {
+    if (this.playing) {
+      this.playing = false;
+    }
+    this.clearTimer();
   }
 }

@@ -52,7 +52,7 @@
                          (ngModelChange)="onVolumeChange($event)"></app-wy-slider>
         </div>
       </div>
-      <app-wy-player-panel [songList]="songList" [currentSong]="currentSong"
+      <app-wy-player-panel [songList]="songList" [currentSong]="currentSong" [playing]="playing"
                            [show]="showPanel" (onClose)="showPanel=false"
                            (onChangeSong)="onChangeSong($event)"
       ></app-wy-player-panel>

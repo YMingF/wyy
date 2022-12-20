@@ -78,6 +78,10 @@ export class WyScrollComponent implements OnInit, AfterViewInit {
     this.bs.scrollToElement.apply(this.bs, args);
   }
 
+  scrollTo(...args) {
+    this.bs.scrollTo.apply(this.bs, args);
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data']) {
       this.refreshScroll();
