@@ -2,19 +2,16 @@ import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {AppStoreModule} from '../../../store';
 import {select, Store} from '@ngrx/store';
 import {
-  getCurrentIndex, getCurrentSong,
+  getCurrentIndex,
+  getCurrentSong,
   getPlayer,
-  getPlayList, getPlayMode,
+  getPlayList,
+  getPlayMode,
   getSongList
 } from '../../../store/selectors/player.selector';
 import {Song} from '../../../service/data-types/common.types';
-import {
-  SetCurrentIndex,
-  SetPlayList,
-  SetPlayMode,
-  SetSongList
-} from '../../../store/actions/player.action';
-import {fromEvent, Subscription} from 'rxjs';
+import {SetCurrentIndex, SetPlayList, SetPlayMode} from '../../../store/actions/player.action';
+import {Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
 import {PlayMode} from './player-type';
 import {shuffle} from '../../../utils/array';
@@ -48,8 +45,6 @@ export class WyPlayerComponent implements OnInit {
   volume = 60;// 音量
   //是否展示音量面板
   showVolumePanel = false;
-  // 是否点击音量面板本身
-  selfClick = false;
   //是否展示列表面板
   showPanel = false;
   winClick: Subscription;//window的click事件
@@ -60,7 +55,10 @@ export class WyPlayerComponent implements OnInit {
   // 当前模式
   currentMode: PlayMode;
   modeCount = 0;
+  // 是否绑定document click事件
+  bindFlag = false;
   private audioEl: HTMLAudioElement;
+
   constructor(
     private store$: Store<AppStoreModule>,
     @Inject(DOCUMENT) private doc: Document,
@@ -205,6 +203,12 @@ export class WyPlayerComponent implements OnInit {
     return this.currentSong ? this.currentSong.al.picUrl : '//s4.music.126.net/style/web2/img/default/default_album.jpg';
   }
 
+  onClickOutside() {
+    this.showVolumePanel = false;
+    this.showPanel = false;
+    this.bindFlag = false;
+  }
+
   onPercentChange(per) {
     if (this.currentSong) {
       const currentTime = this.duration * (per / 100);
@@ -234,31 +238,7 @@ export class WyPlayerComponent implements OnInit {
 
   togglePanel(type: string) {
     this[type] = !this[type];
-    if (this.showVolumePanel || this.showPanel) {
-      this.bindDocumentClickListener();
-    } else {
-      this.unbindDocumentClickListener();
-    }
-  }
-
-  bindDocumentClickListener() {
-    if (!this.winClick) {
-      this.winClick = fromEvent(this.doc, 'click').subscribe(() => {
-        if (!this.selfClick) { // 说明点击了播放器以外区域
-          this.showVolumePanel = false;
-          this.showPanel = false;
-          this.unbindDocumentClickListener();
-        }
-        this.selfClick = false;
-      });
-    }
-  }
-
-  unbindDocumentClickListener() {
-    if (this.winClick) {
-      this.winClick.unsubscribe();
-      this.winClick = null;
-    }
+    this.bindFlag = this.showVolumePanel || this.showPanel;
   }
 
   // 改变模式
