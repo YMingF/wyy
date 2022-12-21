@@ -13,7 +13,7 @@ import {fromEvent, Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
 import {PlayMode} from './player-type';
 import {shuffle} from '../../../utils/array';
-import {PlayState} from '../../../store/reducers/player.reducer';
+import {WyPlayerPanelComponent} from './wy-player-panel/wy-player-panel.component';
 
 const modeTypes: PlayMode[] = [
   {type: 'loop', label: '循环'},
@@ -28,6 +28,8 @@ const modeTypes: PlayMode[] = [
 })
 export class WyPlayerComponent implements OnInit {
   @ViewChild('audioEl', {static: true}) audio: ElementRef;
+  @ViewChild(WyPlayerPanelComponent, {static: false}) private playerPanel: WyPlayerPanelComponent;
+
   percent = 0;
   bufferPercent = 0;
   songList: Song[];
@@ -161,6 +163,10 @@ export class WyPlayerComponent implements OnInit {
   loop() {
     this.audioEl.currentTime = 0;
     this.play();
+    if (this.playerPanel) {
+      this.playerPanel.seekLyric(0); // 传时间戳
+    }
+
   }
 
   play() {
@@ -193,7 +199,11 @@ export class WyPlayerComponent implements OnInit {
 
   onPercentChange(per) {
     if (this.currentSong) {
-      this.audioEl.currentTime = this.duration * (per / 100);
+      const currentTime = this.duration * (per / 100);
+      this.audioEl.currentTime = currentTime;
+      if (this.playerPanel) {
+        this.playerPanel.seekLyric(currentTime * 1000); // 传时间戳
+      }
     }
   }
 

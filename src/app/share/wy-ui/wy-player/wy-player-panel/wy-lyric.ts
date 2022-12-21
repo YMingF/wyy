@@ -137,7 +137,6 @@ export class WyLyric {
 
 
   private callHandler(i: number) {
-    console.log('lineNum', i);
     if (i > 0) {
       this.handler.next({
         txt: this.lines[i].txt,
@@ -158,7 +157,7 @@ export class WyLyric {
     this.playing = playing;
     if (playing) {
       const startTime = (this.pauseStamp || now) - (this.startStamp || now);
-      this.play(startTime, true);
+      this.play(startTime, true); // 暂停时已经拿到了歌词，所以设置为true表示不再重复发送歌词。
     } else {
       this.stop();
       this.pauseStamp = now;
@@ -170,5 +169,9 @@ export class WyLyric {
       this.playing = false;
     }
     this.clearTimer();
+  }
+
+  seek(time: number) {
+    this.play(time);
   }
 }

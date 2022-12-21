@@ -128,4 +128,9 @@ export class WyPlayerPanelComponent implements OnInit {
       this.lyricRefs = null;
     }
   }
+  seekLyric(time:number){
+    if (this.lyric){
+      this.lyric.seek(time)
+    }
+  }
 }
