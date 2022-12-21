@@ -6,12 +6,7 @@ import {SingerService} from '../../service/singer.service';
 import {ActivatedRoute} from '@angular/router';
 import {map} from 'rxjs/operators';
 import {SheetService} from '../../service/sheet.service';
-import {select, Store} from '@ngrx/store';
-import {AppStoreModule} from '../../store';
-import {SetCurrentIndex, SetPlayList, SetSongList} from '../../store/actions/player.action';
-import {PlayState} from '../../store/reducers/player.reducer';
-import {getPlayer} from '../../store/selectors/player.selector';
-import {findSongIndex, shuffle} from '../../utils/array';
+import {BatchActionsService} from '../../store/batch-actions.service';
 
 @Component({
   selector: 'app-home',
@@ -26,17 +21,14 @@ export class HomeComponent implements OnInit {
   HotTags: HotTag[];
   singers: Singer[];
   songSheetList: SongSheet[];
-  playerState: PlayState;
 
   constructor(
     private homeService: HomeService,
     private singerService: SingerService,
     private route: ActivatedRoute,
     private sheetService: SheetService,
-    private store$: Store<AppStoreModule>
+    private batchActionServe: BatchActionsService
   ) {
-    // 获取总的State的值
-    this.store$.pipe(select(getPlayer)).subscribe(res => this.playerState = res);
     this.route.data.pipe(map(res => res['homeData'])).subscribe(([banners, tags, sheets, singer]) => {
       this.banners = banners;
       this.HotTags = tags;
@@ -59,16 +51,7 @@ export class HomeComponent implements OnInit {
 
   onPlaySheet(id: number) {
     this.sheetService.playSheet(id).subscribe(list => {
-      this.store$.dispatch(SetSongList({songList: list}));
-      let playList = list.slice();
-      let index = 0;
-      // 用于处理先切换播放模式，后点击歌单播放时，保证随机切歌的正确
-      if (this.playerState.playMode.type === 'random') {
-        playList = shuffle(list);
-        index = findSongIndex(playList, list[index]);
-      }
-      this.store$.dispatch(SetPlayList({playList}));
-      this.store$.dispatch(SetCurrentIndex({currentIndex: index}));
+      this.batchActionServe.selectPlayList({list, index: 0});
     });
   }
 }

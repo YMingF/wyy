@@ -17,9 +17,10 @@ import {
 import {fromEvent, Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
 import {PlayMode} from './player-type';
-import {findSongIndex, shuffle} from '../../../utils/array';
+import {shuffle} from '../../../utils/array';
 import {WyPlayerPanelComponent} from './wy-player-panel/wy-player-panel.component';
 import {NzModalService} from 'ng-zorro-antd';
+import {BatchActionsService} from '../../../store/batch-actions.service';
 
 const modeTypes: PlayMode[] = [
   {type: 'loop', label: '循环'},
@@ -63,7 +64,8 @@ export class WyPlayerComponent implements OnInit {
   constructor(
     private store$: Store<AppStoreModule>,
     @Inject(DOCUMENT) private doc: Document,
-    private nzModalServe: NzModalService
+    private nzModalServe: NzModalService,
+    private batchActionServe: BatchActionsService
   ) {
     const stateArr = [
       {type: getSongList, cb: list => this.watchList(list, 'songList')},
@@ -89,7 +91,6 @@ export class WyPlayerComponent implements OnInit {
   }
 
   watchPlayMode(mode) {
-    console.log('mode', mode);
     this.currentMode = mode;
     if (this.songList) {
       let list = this.songList.slice();
@@ -270,29 +271,14 @@ export class WyPlayerComponent implements OnInit {
   }
 
   onDeleteSong(song: Song) {
-    const songList = this.songList.slice();
-    const playList = this.playList.slice();
-    let currentIndex = this.currentIndex;
-    const sIndex = findSongIndex(songList, song);
-    songList.splice(sIndex, 1);
-    const pIndex = findSongIndex(playList, song);
-    playList.splice(pIndex, 1);
-    if (currentIndex > pIndex || currentIndex === playList.length - 1) {
-      currentIndex--;
-    }
-    this.store$.dispatch(SetSongList({songList}));
-    this.store$.dispatch(SetPlayList({playList}));
-    this.store$.dispatch(SetCurrentIndex({currentIndex}));
-
+    this.batchActionServe.deleteSong(song);
   }
 
   onClearSong() {
     this.nzModalServe.confirm({
       nzTitle: '确认清空列表?',
       nzOnOk: () => {
-        this.store$.dispatch(SetSongList({songList: []}));
-        this.store$.dispatch(SetPlayList({playList: []}));
-        this.store$.dispatch(SetCurrentIndex({currentIndex: -1}));
+        this.batchActionServe.clearSong();
       }
     });
 
