@@ -23,11 +23,13 @@ export class WyPlayerPanelComponent implements OnInit {
   @Input() playing: boolean;
   @Input() songList: Song[];
   @Input() currentSong: Song;
-  currentIndex: number;
   @Input() show: boolean;
   @Output() onClose = new EventEmitter<void>();
   @Output() onChangeSong = new EventEmitter<Song>();
+  @Output() onDeleteSong = new EventEmitter<Song>();
+  @Output() onClearSong = new EventEmitter<void>();
   @ViewChildren(WyScrollComponent) private wyScroll: QueryList<WyScrollComponent>;
+  currentIndex: number;
   scrollY = 0;
   currentLyric: LyricLine[];
   lyric: WyLyric;
@@ -52,15 +54,17 @@ export class WyPlayerPanelComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if (changes['songList']) {
+      this.updateCurrentIndex();
+    }
     if (changes['playing']) {
       if (!changes['playing'].firstChange) {
-        this.lyric&&this.lyric.togglePlay(this.playing);
+        this.lyric && this.lyric.togglePlay(this.playing);
       }
-
     }
     if (changes['currentSong']) {
       if (this.currentSong) {
-        this.currentIndex = findSongIndex(this.songList, this.currentSong);
+        this.updateCurrentIndex();
         this.updateLyric();
         if (this.show) {
           this.scrollToCurrent();
@@ -81,6 +85,10 @@ export class WyPlayerPanelComponent implements OnInit {
         }
       }
     }
+  }
+  // 在删除等操作改变播放列表时，当前索引也要改变，确保高亮在正确的歌曲上
+  updateCurrentIndex() {
+    this.currentIndex = findSongIndex(this.songList, this.currentSong);
   }
 
   updateLyric() {

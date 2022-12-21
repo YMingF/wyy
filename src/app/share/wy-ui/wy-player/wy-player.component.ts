@@ -8,12 +8,18 @@ import {
   getSongList
 } from '../../../store/selectors/player.selector';
 import {Song} from '../../../service/data-types/common.types';
-import {SetCurrentIndex, SetPlayList, SetPlayMode} from '../../../store/actions/player.action';
+import {
+  SetCurrentIndex,
+  SetPlayList,
+  SetPlayMode,
+  SetSongList
+} from '../../../store/actions/player.action';
 import {fromEvent, Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
 import {PlayMode} from './player-type';
-import {shuffle} from '../../../utils/array';
+import {findSongIndex, shuffle} from '../../../utils/array';
 import {WyPlayerPanelComponent} from './wy-player-panel/wy-player-panel.component';
+import {NzModalService} from 'ng-zorro-antd';
 
 const modeTypes: PlayMode[] = [
   {type: 'loop', label: '循环'},
@@ -56,7 +62,8 @@ export class WyPlayerComponent implements OnInit {
   private audioEl: HTMLAudioElement;
   constructor(
     private store$: Store<AppStoreModule>,
-    @Inject(DOCUMENT) private doc: Document
+    @Inject(DOCUMENT) private doc: Document,
+    private nzModalServe: NzModalService
   ) {
     const stateArr = [
       {type: getSongList, cb: list => this.watchList(list, 'songList')},
@@ -260,5 +267,34 @@ export class WyPlayerComponent implements OnInit {
 
   onChangeSong(song: Song) {
     this.updateCurrentIndex(this.playList, song);
+  }
+
+  onDeleteSong(song: Song) {
+    const songList = this.songList.slice();
+    const playList = this.playList.slice();
+    let currentIndex = this.currentIndex;
+    const sIndex = findSongIndex(songList, song);
+    songList.splice(sIndex, 1);
+    const pIndex = findSongIndex(playList, song);
+    playList.splice(pIndex, 1);
+    if (currentIndex > pIndex || currentIndex === playList.length - 1) {
+      currentIndex--;
+    }
+    this.store$.dispatch(SetSongList({songList}));
+    this.store$.dispatch(SetPlayList({playList}));
+    this.store$.dispatch(SetCurrentIndex({currentIndex}));
+
+  }
+
+  onClearSong() {
+    this.nzModalServe.confirm({
+      nzTitle: '确认清空列表?',
+      nzOnOk: () => {
+        this.store$.dispatch(SetSongList({songList: []}));
+        this.store$.dispatch(SetPlayList({playList: []}));
+        this.store$.dispatch(SetCurrentIndex({currentIndex: -1}));
+      }
+    });
+
   }
 }
