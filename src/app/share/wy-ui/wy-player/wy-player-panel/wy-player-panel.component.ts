@@ -3,7 +3,8 @@ import {
   EventEmitter,
   Input,
   OnInit,
-  Output, QueryList,
+  Output,
+  QueryList,
   SimpleChanges,
   ViewChildren
 } from '@angular/core';
@@ -35,6 +36,7 @@ export class WyPlayerPanelComponent implements OnInit {
   lyric: WyLyric;
   currentLineNum: number;
   lyricRefs: NodeList; // 存放歌词界面所有的li标签
+  startLine = 2;
   constructor(private songService: SongService) {
   }
 
@@ -78,11 +80,15 @@ export class WyPlayerPanelComponent implements OnInit {
       if (!changes['show'].firstChange && this.show) {
         this.wyScroll.first.refreshScroll();
         this.wyScroll.last.refreshScroll(); // 刷新歌词面板
-        if (this.currentSong) {
           timer(80).subscribe(() => {
-            this.scrollToCurrent(0);
+            if (this.currentSong) {
+              this.scrollToCurrent(0);
+            }
+            // 确保歌词面板打开时，滚动条滚动到歌词高亮位置
+            if (this.lyricRefs) {
+              this.scrollToCurrentLyric(0);
+            }
           });
-        }
       }
     }
   }
@@ -96,8 +102,8 @@ export class WyPlayerPanelComponent implements OnInit {
     this.songService.getLyric(this.currentSong.id).subscribe(res => {
       this.lyric = new WyLyric(res);
       this.currentLyric = this.lyric.lines;
-      const startLine = res.tlyric ? 1 : 2;
-      this.handleLyric(startLine);
+      this.startLine = res.tlyric ? 1 : 2;
+      this.handleLyric();
       this.wyScroll.last.scrollTo(0, 0);
       timer(100).subscribe(() => {
         if (this.playing) {
@@ -107,22 +113,18 @@ export class WyPlayerPanelComponent implements OnInit {
     });
   }
 
-  private handleLyric(startLine = 2) {
+  private handleLyric() {
     this.lyric.handler.subscribe(({lineNum}) => {
       if (!this.lyricRefs) {
         this.lyricRefs = this.wyScroll.last.el.nativeElement.querySelectorAll('ul li');
       }
       if (this.lyricRefs.length) {
         this.currentLineNum = lineNum;
-        if (this.currentLineNum > startLine) {
-          const targetLine = this.lyricRefs[lineNum - startLine];
-          if (targetLine) {
-            this.wyScroll.last.scrollToElement(targetLine, 300, false, false);
-          }
+        if (this.currentLineNum > this.startLine) {
+          this.scrollToCurrentLyric();
         } else {
           this.wyScroll.last.scrollTo(0, 0);
         }
-
       }
     });
   }
@@ -136,9 +138,17 @@ export class WyPlayerPanelComponent implements OnInit {
       this.lyricRefs = null;
     }
   }
-  seekLyric(time:number){
-    if (this.lyric){
-      this.lyric.seek(time)
+
+  seekLyric(time: number) {
+    if (this.lyric) {
+      this.lyric.seek(time);
+    }
+  }
+
+  private scrollToCurrentLyric(speed = 300) {
+    const targetLine = this.lyricRefs[this.currentLineNum - this.startLine];
+    if (targetLine) {
+      this.wyScroll.last.scrollToElement(targetLine, speed, false, false);
     }
   }
 }
