@@ -43,6 +43,8 @@ export type SongSheet = {
   shareCount: number,
   commentCount: number,
   subscribed: boolean, // 是否订阅歌单
+  userId: number,
+  subscribedCount: number
 }
 
 // 歌曲地址
