@@ -32,6 +32,7 @@ export type SongSheet = {
   id: number;
   name: string;
   picUrl: string;
+  coverImgUrl: string;
   playCount: number;
   tracks: Song[]; // 歌单下的所有歌曲
 }
@@ -49,5 +50,5 @@ export type Lyric = {
 
 export type SheetList = {
   total: number,
-  playLists: SongSheet[]
+  playlists: SongSheet[]
 }

@@ -15,7 +15,7 @@ interface Handler extends BaseLyricLine {
   lineNum: number; // 当前歌词的行索引
 }
 // 匹配歌词的时间前缀[00:09]或[00:09.021]或[00:09.32]
-const timeExp = /\[(\d{2}):(\d{2})(.\d{2,3})?\]/;
+const timeExp = /\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?\]/;
 
 export class WyLyric {
   private lrc: Lyric;

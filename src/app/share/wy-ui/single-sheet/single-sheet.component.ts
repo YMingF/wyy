@@ -1,4 +1,11 @@
-import {Component, OnInit, Input, ChangeDetectionStrategy, Output, EventEmitter} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import {SongSheet} from '../../../service/data-types/common.types';
 
 @Component({
@@ -11,13 +18,18 @@ export class SingleSheetComponent implements OnInit {
    @Input() sheet: SongSheet;
    @Output() onPlay = new EventEmitter<number>();
 
-   constructor() { }
+  constructor() {
+  }
 
-   ngOnInit() {
-   }
+  ngOnInit() {
+  }
 
-   playSheet(evt: MouseEvent, id: number) {
-      evt.stopPropagation();
-      this.onPlay.emit(id);
-   }
+  playSheet(evt: MouseEvent, id: number) {
+    evt.stopPropagation();
+    this.onPlay.emit(id);
+  }
+
+  get coverImg(): string {
+    return this.sheet.picUrl || this.sheet.coverImgUrl;
+  }
 }
