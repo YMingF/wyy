@@ -35,6 +35,14 @@ export type SongSheet = {
   coverImgUrl: string;
   playCount: number;
   tracks: Song[]; // 歌单下的所有歌曲
+  tags: string[],
+  createTime: number,
+  creator: { nickname: string, avatarUrl: string },
+  description: string,
+  subscribeCount: number,
+  shareCount: number,
+  commentCount: number,
+  subscribed: boolean, // 是否订阅歌单
 }
 
 // 歌曲地址
