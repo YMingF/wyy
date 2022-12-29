@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {SheetParams, SheetService} from '../../service/sheet.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {SheetList} from '../../service/data-types/common.types';
 import {BatchActionsService} from '../../store/batch-actions.service';
 
@@ -19,7 +19,11 @@ export class SheetListComponent implements OnInit {
   sheets: SheetList;
   orderValue = 'hot';
 
-  constructor(private sheetService: SheetService, private route: ActivatedRoute, private batchActionServe: BatchActionsService) {
+  constructor(
+    private sheetService: SheetService,
+    private route: ActivatedRoute,
+    private batchActionServe: BatchActionsService,
+    private router: Router) {
     this.listParams.cat = this.route.snapshot.queryParamMap.get('cat') || '全部';
     this.getList();
   }
@@ -31,8 +35,6 @@ export class SheetListComponent implements OnInit {
   getList() {
     this.sheetService.getSheets(this.listParams).subscribe(sheets => {
       this.sheets = sheets;
-      console.log('获取的数据');
-      console.log(this.listParams);
     });
   }
 
@@ -42,13 +44,14 @@ export class SheetListComponent implements OnInit {
     this.getList();
   }
 
-  onPlaySheet(id:number) {
+  onPlaySheet(id: number) {
     this.sheetService.playSheet(id).subscribe(list => {
       this.batchActionServe.selectPlayList({list, index: 0});
     });
   }
 
-  toInfo(id) {
+  toInfo(id: number) {
+    this.router.navigate(['/sheetInfo', id]);
   }
 
   onPageChange(page: number) {

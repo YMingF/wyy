@@ -3,7 +3,7 @@ import {HomeService} from '../../service/home.service';
 import {Banner, HotTag, Singer, SongSheet} from '../../service/data-types/common.types';
 import {NzCarouselComponent} from 'ng-zorro-antd/carousel';
 import {SingerService} from '../../service/singer.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {map} from 'rxjs/operators';
 import {SheetService} from '../../service/sheet.service';
 import {BatchActionsService} from '../../store/batch-actions.service';
@@ -27,7 +27,8 @@ export class HomeComponent implements OnInit {
     private singerService: SingerService,
     private route: ActivatedRoute,
     private sheetService: SheetService,
-    private batchActionServe: BatchActionsService
+    private batchActionServe: BatchActionsService,
+    private router: Router
   ) {
     this.route.data.pipe(map(res => res['homeData'])).subscribe(([banners, tags, sheets, singer]) => {
       this.banners = banners;
@@ -53,5 +54,9 @@ export class HomeComponent implements OnInit {
     this.sheetService.playSheet(id).subscribe(list => {
       this.batchActionServe.selectPlayList({list, index: 0});
     });
+  }
+
+  toInfo(id: number) {
+    this.router.navigate(['/sheetInfo', id]);
   }
 }
