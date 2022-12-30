@@ -1,13 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {map} from 'rxjs/internal/operators';
+import {map, takeUntil} from 'rxjs/internal/operators';
 import {AppStoreModule} from '../../store/index';
-import {Store} from '@ngrx/store';
-import {Subject} from 'rxjs';
+import {select, Store} from '@ngrx/store';
+import {Observable, Subject} from 'rxjs';
 import {BatchActionsService} from '../../store/batch-actions.service';
 import {NzMessageService} from 'ng-zorro-antd';
 import {Singer, Song, SongSheet} from '../../service/data-types/common.types';
 import {SongService} from '../../service/song.service';
+import {getCurrentSong, getPlayer} from '../../store/selectors/player.selector';
 
 @Component({
   selector: 'app-sheet-info',
@@ -31,7 +32,7 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
   currentSong: Song;
   currentIndex = -1;
   private destroy$ = new Subject<void>();
-
+  private appStore$: Observable<AppStoreModule>;
   constructor(
     private route: ActivatedRoute,
     private store$: Store<AppStoreModule>,
@@ -51,8 +52,16 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
   ngOnInit() {
   }
 
+  // 监听当前正在播放的歌曲
   private listenCurrent() {
-
+    // takeUntil(this.destroy$) 表示当this.destroy$发射流的时候停止监听
+    this.store$.pipe(
+      select(getPlayer),
+      select(getCurrentSong),
+      takeUntil(this.destroy$)).subscribe(song => {
+      console.log('song', song);
+      this.currentSong = song;
+    });
   }
 
   private changeDesc(desc: string) {
@@ -88,7 +97,17 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
 
   // 添加一首歌曲
   onAddSong(song: Song, isPlay = false) {
-
+    // 当前没正播放歌曲，或播放歌曲和想添加的歌曲不同时，才允许添加歌曲
+    if (!this.currentSong || this.currentSong.id !== song.id) {
+      // 获取歌曲的url，因为原数据song里没有url
+      this.songServe.getSongList(song).subscribe(list => {
+        if (list.length) {
+          this.batchActionServe.insertSong(list[0], isPlay);
+        } else {
+          alert('无Url');
+        }
+      });
+    }
   }
 
   onAddSongs(songs: Song[], isPlay = false) {
@@ -120,6 +139,7 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

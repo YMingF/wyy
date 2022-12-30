@@ -57,7 +57,9 @@ export class WyPlayerPanelComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['songList']) {
-      this.updateCurrentIndex();
+      if (this.currentSong) {
+        this.updateCurrentIndex();
+      }
     }
     if (changes['playing']) {
       if (!changes['playing'].firstChange) {
