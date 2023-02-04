@@ -9,6 +9,7 @@ import {NzMessageService} from 'ng-zorro-antd';
 import {Singer, Song, SongSheet} from '../../service/data-types/common.types';
 import {SongService} from '../../service/song.service';
 import {getCurrentSong, getPlayer} from '../../store/selectors/player.selector';
+import {findSongIndex} from '../../utils/array';
 
 @Component({
   selector: 'app-sheet-info',
@@ -38,7 +39,7 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
     private store$: Store<AppStoreModule>,
     private songServe: SongService,
     private batchActionServe: BatchActionsService,
-    private messageServe: NzMessageService
+    private nzMessageServe: NzMessageService
   ) {
     this.route.data.pipe(map(res => res.sheetInfo)).subscribe(res => {
       this.sheetInfo = res;
@@ -59,8 +60,12 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
       select(getPlayer),
       select(getCurrentSong),
       takeUntil(this.destroy$)).subscribe(song => {
-      console.log('song', song);
       this.currentSong = song;
+      if (song) {
+        this.currentIndex = findSongIndex(this.sheetInfo.tracks, song);
+      } else {
+        this.currentIndex = -1;
+      }
     });
   }
 
@@ -104,14 +109,22 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
         if (list.length) {
           this.batchActionServe.insertSong(list[0], isPlay);
         } else {
-          alert('无Url');
+          this.nzMessageServe.create('warning', '无Url');
         }
       });
     }
   }
 
   onAddSongs(songs: Song[], isPlay = false) {
-
+    this.songServe.getSongList(songs).subscribe(list => {
+      if (list.length) {
+        if (isPlay) {
+          this.batchActionServe.selectPlayList({list, index: 0});
+        } else {
+          this.batchActionServe.insertSongs(list);
+        }
+      }
+    });
   }
 
 
