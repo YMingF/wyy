@@ -3,13 +3,15 @@ import { NgModule } from '@angular/core';
 import { SingerRoutingModule } from './singer-routing.module';
 import { ShareModule } from "../../share/share.module";
 import { SingerDetailComponent } from './singer-detail/singer-detail.component';
+import { NzTableModule } from "ng-zorro-antd";
 
 
 @NgModule({
   declarations: [SingerDetailComponent],
   imports: [
     ShareModule,
-    SingerRoutingModule
+    SingerRoutingModule,
+    NzTableModule
   ]
 })
 export class SingerModule { }

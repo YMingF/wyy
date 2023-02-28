@@ -15,7 +15,8 @@ export type Singer = {
   id: number;
   name: string;
   picUrl: string,
-  albumSize: number
+  albumSize: number,
+  alias: string[]
 }
 // 歌曲
 export type Song = {

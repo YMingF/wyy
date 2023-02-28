@@ -12,16 +12,17 @@
         <i class="toggle" [class.playing]="playing" (click)="onToggle()"></i>
         <i class="next" (click)="onNext()"></i>
       </div>
-      <div class="head">
+      <div class="head" (click)="toInfo(['/songInfo',currentSong?.id])">
         <img [src]="picUrl" alt=""/>
         <i class="mask"></i>
       </div>
       <div class="play">
         <div class="words clearfix ">
-          <p class="ellipsis margin-bottom-none">{{currentSong?.name}}</p>
+          <p class="ellipsis margin-bottom-none"
+             (click)="toInfo(['/songInfo',currentSong?.id])">{{currentSong?.name}}</p>
           <ul class="songs clearfix margin-bottom-none">
             <li *ngFor="let item of currentSong?.ar;last as isLast">
-              <a>{{item.name}}</a>
+              <a (click)="toInfo(['/singer',item?.id])">{{item.name}}</a>
               <span [hidden]="isLast">/</span>
             </li>
           </ul>
@@ -56,6 +57,7 @@
                            [show]="showPanel" (onClose)="showPanel=false"
                            (onDeleteSong)="onDeleteSong($event)" (onClearSong)="onClearSong()"
                            (onChangeSong)="onChangeSong($event)"
+                           (onToInfo)="toInfo($event)"
       ></app-wy-player-panel>
     </div>
   </div>

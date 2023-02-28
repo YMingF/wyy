@@ -1,19 +1,10 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  QueryList,
-  SimpleChanges,
-  ViewChildren
-} from '@angular/core';
-import {Song} from '../../../../service/data-types/common.types';
-import {WyScrollComponent} from '../wy-scroll/wy-scroll.component';
-import {findSongIndex} from '../../../../utils/array';
-import {timer} from 'rxjs';
-import {SongService} from '../../../../service/song.service';
-import {LyricLine, WyLyric} from './wy-lyric';
+import { Component, EventEmitter, Input, OnInit, Output, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
+import { Song } from '../../../../service/data-types/common.types';
+import { WyScrollComponent } from '../wy-scroll/wy-scroll.component';
+import { findSongIndex } from '../../../../utils/array';
+import { timer } from 'rxjs';
+import { SongService } from '../../../../service/song.service';
+import { LyricLine, WyLyric } from './wy-lyric';
 
 @Component({
   selector: 'app-wy-player-panel',
@@ -29,6 +20,7 @@ export class WyPlayerPanelComponent implements OnInit {
   @Output() onChangeSong = new EventEmitter<Song>();
   @Output() onDeleteSong = new EventEmitter<Song>();
   @Output() onClearSong = new EventEmitter<void>();
+  @Output() onToInfo = new EventEmitter<[string, number]>();
   @ViewChildren(WyScrollComponent) private wyScroll: QueryList<WyScrollComponent>;
   currentIndex: number;
   scrollY = 0;
@@ -152,5 +144,10 @@ export class WyPlayerPanelComponent implements OnInit {
     if (targetLine) {
       this.wyScroll.last.scrollToElement(targetLine, speed, false, false);
     }
+  }
+
+  toInfo(evt: MouseEvent, path: [string, number,]) {
+    evt.stopPropagation();
+    this.onToInfo.emit(path);
   }
 }

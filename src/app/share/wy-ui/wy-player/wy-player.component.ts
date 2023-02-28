@@ -1,6 +1,6 @@
-import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
-import {AppStoreModule} from '../../../store';
-import {select, Store} from '@ngrx/store';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { AppStoreModule } from '../../../store';
+import { select, Store } from '@ngrx/store';
 import {
   getCurrentIndex,
   getCurrentSong,
@@ -9,15 +9,16 @@ import {
   getPlayMode,
   getSongList
 } from '../../../store/selectors/player.selector';
-import {Song} from '../../../service/data-types/common.types';
-import {SetCurrentIndex, SetPlayList, SetPlayMode} from '../../../store/actions/player.action';
-import {Subscription} from 'rxjs';
-import {DOCUMENT} from '@angular/common';
-import {PlayMode} from './player-type';
-import {shuffle} from '../../../utils/array';
-import {WyPlayerPanelComponent} from './wy-player-panel/wy-player-panel.component';
-import {NzModalService} from 'ng-zorro-antd';
-import {BatchActionsService} from '../../../store/batch-actions.service';
+import { Song } from '../../../service/data-types/common.types';
+import { SetCurrentIndex, SetPlayList, SetPlayMode } from '../../../store/actions/player.action';
+import { Subscription } from 'rxjs';
+import { DOCUMENT } from '@angular/common';
+import { PlayMode } from './player-type';
+import { shuffle } from '../../../utils/array';
+import { WyPlayerPanelComponent } from './wy-player-panel/wy-player-panel.component';
+import { NzModalService } from 'ng-zorro-antd';
+import { BatchActionsService } from '../../../store/batch-actions.service';
+import { Router } from "@angular/router";
 
 const modeTypes: PlayMode[] = [
   {type: 'loop', label: '循环'},
@@ -63,7 +64,8 @@ export class WyPlayerComponent implements OnInit {
     private store$: Store<AppStoreModule>,
     @Inject(DOCUMENT) private doc: Document,
     private nzModalServe: NzModalService,
-    private batchActionServe: BatchActionsService
+    private batchActionServe: BatchActionsService,
+    private router: Router
   ) {
     const stateArr = [
       {type: getSongList, cb: list => this.watchList(list, 'songList')},
@@ -262,5 +264,13 @@ export class WyPlayerComponent implements OnInit {
       }
     });
 
+  }
+
+  toInfo(path: [string, number]) {
+    if(path[1]){
+      this.showPanel = false;
+      this.showVolumePanel = false;
+      this.router.navigate(path);
+    }
   }
 }
