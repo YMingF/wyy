@@ -64,7 +64,12 @@ export type SheetList = {
   playlists: SongSheet[]
 }
 
-export type SingerDetail={
-  artist:Singer,
-  hotSongs:Song[]
+export type SingerDetail = {
+  artist: Singer,
+  hotSongs: Song[]
+}
+export type SearchResult = {
+  artists?: Singer[],
+  playlists: SongSheet[],
+  songs?: Song[]
 }
