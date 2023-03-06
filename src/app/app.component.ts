@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { SearchService } from "./service/search.service";
+import { SearchResult } from "./service/data-types/common.types";
 
 @Component({
   selector: 'app-root',
@@ -15,15 +16,17 @@ export class AppComponent {
     label: '歌单',
     path: '/sheet'
   }];
-
+  searchResult: any;
   constructor(private searchServe: SearchService) {
   }
 
   onSearch(keyWords: string) {
     if (keyWords) {
       this.searchServe.search(keyWords).subscribe(res => {
-        console.log('结果', res);
+        this.searchResult = res;
       });
+    } else {
+      this.searchResult = {};
     }
   }
 }
