@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { SearchResult } from "../../../../service/data-types/common.types";
 import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-wy-search-panel',
   templateUrl: './wy-search-panel.component.html',
-  styleUrls: ['./wy-search-panel.component.less']
+  styleUrls: ['./wy-search-panel.component.less'],
+  encapsulation: ViewEncapsulation.None
 })
 export class WySearchPanelComponent implements OnInit {
   searchResult: SearchResult;
