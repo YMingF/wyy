@@ -52,6 +52,8 @@ export class WySearchComponent implements OnInit, AfterViewInit, OnChanges {
     if (changes['searchResult'] && !changes['searchResult'].firstChange) {
       if (!isEmptyObject(this.searchResult)) {
         this.showOverlayPanel();
+      }else{
+        this.showOverlayPanel()
       }
     }
   }
@@ -71,12 +73,12 @@ export class WySearchComponent implements OnInit, AfterViewInit, OnChanges {
         originY: "bottom",
       }]).withLockedPosition(true);//让浮层根据某个具体的dom定位
     this.overlayRef = this.overlay.create({
-      hasBackdrop: true,//加个全屏的蒙版
       positionStrategy,
       scrollStrategy: this.overlay.scrollStrategies.reposition(),//用来确保浮层不会是position:fixed的效果，而是会随滚动而滚动位置
     }); // 浮层
     const panelPortal = new ComponentPortal(WySearchPanelComponent, this.viewContainerRef); //在浮层上要展示的UI
     const panelRef = this.overlayRef.attach(panelPortal);// 将UI依附到浮层上展示
+    panelRef.instance.searchResult=this.searchResult;
     //当你点击了由前面的hasBackdrop:true属性所创建的全屏图层时，就会触发backdropClick，返回一个Observable对象，你可以监听它，并决定你在触发时执行啥操作
     this.overlayRef.backdropClick().subscribe(() => {
       this.hideOverlayPanel();
@@ -94,6 +96,10 @@ export class WySearchComponent implements OnInit, AfterViewInit, OnChanges {
     if (this.searchResult && !isEmptyObject(this.searchResult)) {
       this.showOverlayPanel();
     }
+  }
+
+  onBlur(){
+    this.hideOverlayPanel();
   }
 
 }
