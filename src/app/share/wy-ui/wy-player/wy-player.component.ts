@@ -19,6 +19,7 @@ import { WyPlayerPanelComponent } from './wy-player-panel/wy-player-panel.compon
 import { NzModalService } from 'ng-zorro-antd';
 import { BatchActionsService } from '../../../store/batch-actions.service';
 import { Router } from "@angular/router";
+import { animate, state, style, transition, trigger } from "@angular/animations";
 
 const modeTypes: PlayMode[] = [
   {type: 'loop', label: '循环'},
@@ -29,12 +30,20 @@ const modeTypes: PlayMode[] = [
 @Component({
   selector: 'app-wy-player',
   templateUrl: './wy-player.component.html',
-  styleUrls: ['./wy-player.component.less']
+  styleUrls: ['./wy-player.component.less'],
+  animations: [trigger('showHide', [
+    state('show', style({bottom: 0})),
+    state('hide', style({bottom: -71})),
+    transition('show=>hide', [animate('0.3s')]),
+    transition('hide=>show', [animate('0.1s')]),
+  ])]
 })
 export class WyPlayerComponent implements OnInit {
   @ViewChild('audioEl', {static: true}) audio: ElementRef;
   @ViewChild(WyPlayerPanelComponent, {static: false}) private playerPanel: WyPlayerPanelComponent;
-
+  showPlayer = 'hide';
+  isLocked = false;
+  animating = false; // 是否正在动画中
   percent = 0;
   bufferPercent = 0;
   songList: Song[];
@@ -267,10 +276,16 @@ export class WyPlayerComponent implements OnInit {
   }
 
   toInfo(path: [string, number]) {
-    if(path[1]){
+    if (path[1]) {
       this.showPanel = false;
       this.showVolumePanel = false;
       this.router.navigate(path);
+    }
+  }
+
+  togglePlayer(type: string) {
+    if (!this.isLocked && !this.animating) {
+      this.showPlayer = type;
     }
   }
 }
