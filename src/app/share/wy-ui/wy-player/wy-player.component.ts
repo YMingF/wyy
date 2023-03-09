@@ -2,6 +2,7 @@ import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core'
 import { AppStoreModule } from '../../../store';
 import { select, Store } from '@ngrx/store';
 import {
+  getCurrentAction,
   getCurrentIndex,
   getCurrentSong,
   getPlayer,
@@ -10,8 +11,8 @@ import {
   getSongList
 } from '../../../store/selectors/player.selector';
 import { Song } from '../../../service/data-types/common.types';
-import { SetCurrentIndex, SetPlayList, SetPlayMode } from '../../../store/actions/player.action';
-import { Subscription } from 'rxjs';
+import { SetCurrentAction, SetCurrentIndex, SetPlayList, SetPlayMode } from '../../../store/actions/player.action';
+import { Subscription, timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { PlayMode } from './player-type';
 import { shuffle } from '../../../utils/array';
@@ -19,7 +20,8 @@ import { WyPlayerPanelComponent } from './wy-player-panel/wy-player-panel.compon
 import { NzModalService } from 'ng-zorro-antd';
 import { BatchActionsService } from '../../../store/batch-actions.service';
 import { Router } from "@angular/router";
-import { animate, state, style, transition, trigger } from "@angular/animations";
+import { animate, AnimationEvent, state, style, transition, trigger } from "@angular/animations";
+import { CurrentActions } from "../../../store/reducers/player.reducer";
 
 const modeTypes: PlayMode[] = [
   {type: 'loop', label: '循环'},
@@ -27,6 +29,10 @@ const modeTypes: PlayMode[] = [
   {type: 'singleLoop', label: '单曲循环'}
 ];
 
+enum TipTitles {
+  Add = '已添加到列表',
+  Play = '已开始播放'
+}
 @Component({
   selector: 'app-wy-player',
   templateUrl: './wy-player.component.html',
@@ -68,6 +74,10 @@ export class WyPlayerComponent implements OnInit {
   // 是否绑定document click事件
   bindFlag = false;
   private audioEl: HTMLAudioElement;
+  controlTooltip = {
+    title: '',
+    show: false
+  };
 
   constructor(
     private store$: Store<AppStoreModule>,
@@ -81,7 +91,8 @@ export class WyPlayerComponent implements OnInit {
       {type: getPlayList, cb: list => this.watchList(list, 'playList')},
       {type: getCurrentIndex, cb: index => this.watchCurrentIndex(index)},
       {type: getPlayMode, cb: mode => this.watchPlayMode(mode)},
-      {type: getCurrentSong, cb: song => this.watchCurrentSong(song)}
+      {type: getCurrentSong, cb: song => this.watchCurrentSong(song)},
+      {type: getCurrentAction, cb: action => this.watchCurrentAction(action)},
     ];
     stateArr.forEach(item => {
       // @ts-ignore
@@ -116,6 +127,38 @@ export class WyPlayerComponent implements OnInit {
     if (song) {
       this.currentSong = song;
       this.duration = this.currentSong.dt / 1000;// dt属性的值为歌曲总时长,单位为毫秒
+    }
+  }
+
+  watchCurrentAction(action: CurrentActions) {
+    const title = TipTitles[CurrentActions[action]];
+    if (title) {
+      this.controlTooltip.title = title;
+      if (this.showPlayer === 'hide') {
+        this.togglePlayer('show');
+      } else {
+        this.showToolTip();
+
+      }
+    }
+    this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Other}));
+  }
+
+  showToolTip() {
+    this.controlTooltip.show = true;
+    timer(1500).subscribe(()=>{
+      this.controlTooltip={
+        title: '',
+        show:false
+      }
+    })
+  }
+
+  onAnimateDone(evt: AnimationEvent) {
+    this.animating = false;
+    if (evt.toState === 'show' && this.controlTooltip.title) {
+      this.showToolTip();
+
     }
   }
 

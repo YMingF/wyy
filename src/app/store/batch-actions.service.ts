@@ -1,11 +1,11 @@
-import {Injectable} from '@angular/core';
-import {AppStoreModule} from './index';
-import {Song} from '../service/data-types/common.types';
-import {select, Store} from '@ngrx/store';
-import {getPlayer} from './selectors/player.selector';
-import {PlayState} from './reducers/player.reducer';
-import {SetCurrentIndex, SetPlayList, SetSongList} from './actions/player.action';
-import {findSongIndex, shuffle} from '../utils/array';
+import { Injectable } from '@angular/core';
+import { AppStoreModule } from './index';
+import { Song } from '../service/data-types/common.types';
+import { select, Store } from '@ngrx/store';
+import { getPlayer } from './selectors/player.selector';
+import { CurrentActions, PlayState } from './reducers/player.reducer';
+import { SetCurrentAction, SetCurrentIndex, SetPlayList, SetSongList } from './actions/player.action';
+import { findSongIndex, shuffle } from '../utils/array';
 
 @Injectable({
   providedIn: AppStoreModule
@@ -30,6 +30,7 @@ export class BatchActionsService {
     }
     this.store$.dispatch(SetPlayList({playList}));
     this.store$.dispatch(SetCurrentIndex({currentIndex: trueIndex}));
+    this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Play}));
   }
 
   // 添加歌曲
@@ -54,6 +55,9 @@ export class BatchActionsService {
     }
     if (insertIndex !== this.playerState.currentIndex) {
       this.store$.dispatch(SetCurrentIndex({currentIndex: insertIndex}));
+      this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Play}));
+    }else{
+      this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Add}));
     }
   }
 
@@ -71,12 +75,15 @@ export class BatchActionsService {
     this.store$.dispatch(SetSongList({songList}));
     this.store$.dispatch(SetPlayList({playList}));
     this.store$.dispatch(SetCurrentIndex({currentIndex}));
+    this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Delete}));
+
   }
 
   clearSong() {
     this.store$.dispatch(SetSongList({songList: []}));
     this.store$.dispatch(SetPlayList({playList: []}));
     this.store$.dispatch(SetCurrentIndex({currentIndex: -1}));
+    this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Clear}));
   }
 
 //  添加多首歌曲
@@ -92,5 +99,6 @@ export class BatchActionsService {
     });
     this.store$.dispatch(SetSongList({songList}));
     this.store$.dispatch(SetPlayList({playList}));
+    this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Add}));
   };
 }

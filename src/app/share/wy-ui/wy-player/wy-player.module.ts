@@ -6,7 +6,7 @@ import {FormsModule} from '@angular/forms';
 import {FormatTimePipe} from '../../pipes/format-time.pipe';
 import {WyPlayerPanelComponent} from './wy-player-panel/wy-player-panel.component';
 import {WyScrollComponent} from './wy-scroll/wy-scroll.component';
-import {NzModalModule} from 'ng-zorro-antd';
+import { NzModalModule, NzToolTipModule } from 'ng-zorro-antd';
 import {ClickOutSideDirective} from '../../directives/click-out-side.directive';
 
 
@@ -16,7 +16,8 @@ import {ClickOutSideDirective} from '../../directives/click-out-side.directive';
     CommonModule,
     WySliderModule,
     FormsModule,
-    NzModalModule
+    NzModalModule,
+    NzToolTipModule
   ],
   exports: [WyPlayerComponent, FormatTimePipe, ClickOutSideDirective]
 })
