@@ -6,16 +6,21 @@ import { getPlayer } from './selectors/player.selector';
 import { CurrentActions, PlayState } from './reducers/player.reducer';
 import { SetCurrentAction, SetCurrentIndex, SetPlayList, SetSongList } from './actions/player.action';
 import { findSongIndex, shuffle } from '../utils/array';
+import { getMember } from "./selectors/member.selector";
+import { MemberState, ModalTypes } from "./reducers/member.reducer";
+import { SetModalType, SetModalVisible } from "./actions/member.action";
 
 @Injectable({
   providedIn: AppStoreModule
 })
 export class BatchActionsService {
   private playerState: PlayState;
+  private memberState: MemberState;
 
   constructor(private store$: Store<AppStoreModule>) {
     // 获取总的State的值
     this.store$.pipe(select(getPlayer)).subscribe(res => this.playerState = res);
+    this.store$.pipe(select(getMember)).subscribe(res => this.memberState = res);
   }
 
   // 播放列表
@@ -101,4 +106,10 @@ export class BatchActionsService {
     this.store$.dispatch(SetPlayList({playList}));
     this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Add}));
   };
+
+  // 会员弹窗显示隐藏/类型
+  controlModal(modalVisible=true,modalType=ModalTypes.Default){
+    this.store$.dispatch(SetModalType({modalType}));
+    this.store$.dispatch(SetModalVisible({modalVisible}));
+  }
 }

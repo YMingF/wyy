@@ -1,5 +1,6 @@
 <div class="m-layer"
      #modalContainer
+     *ngIf="showModal"
      cdkDrag
      cdkDragBoundary=".cdk-overlay-container">
   <div class="zbar" cdkDragHandle>
@@ -22,6 +23,6 @@
       <ng-content></ng-content>
     </ng-container>
   </ng-container>
-  <div class="zcls" title="关闭" ></div>
-  <nz-spin nzTip="loading..." class="spin" ></nz-spin>
+  <div class="zcls" title="关闭" (click)="hide()" ></div>
+<!--  <nz-spin nzTip="loading..." class="spin" ></nz-spin>-->
 </div>
