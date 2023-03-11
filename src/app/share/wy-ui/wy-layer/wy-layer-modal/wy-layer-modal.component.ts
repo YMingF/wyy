@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { select, Store } from "@ngrx/store";
 import { AppStoreModule } from "../../../../store";
 import { getModalType, getModalVisible } from "../../../../store/selectors/member.selector";
-import { ModalTypes } from "../../../../store/reducers/member.reducer";
-import { Overlay, OverlayKeyboardDispatcher, OverlayRef, BlockScrollStrategy } from "@angular/cdk/overlay";
-import { BatchActionsService } from "../../../../store/batch-actions.service";
-import {APOSTROPHE} from '@angular/cdk/keycodes'
+import { BlockScrollStrategy, OverlayRef, Overlay, OverlayKeyboardDispatcher } from '@angular/cdk/overlay';
+import { ModalTypes } from 'src/app/store/reducers/member.reducer';
+import { BatchActionsService } from 'src/app/store/batch-actions.service';
+
 @Component({
   selector: 'app-wy-layer-modal',
   templateUrl: './wy-layer-modal.component.html',
@@ -63,7 +63,7 @@ export class WyLayerModalComponent implements OnInit {
       this.overlayKeyboardDispatcher.add(this.overlayRef);
     } else {
       this.scrollStrategy.disable();//放开滚动条，即可以滚动
-      this.overlayKeyboardDispatcher.add(this.overlayRef);
+      this.overlayKeyboardDispatcher.remove(this.overlayRef);
     }
     this.cdr.markForCheck();
   }
