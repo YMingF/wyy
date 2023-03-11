@@ -124,8 +124,8 @@ export class WyPlayerComponent implements OnInit {
   }
 
   watchCurrentSong(song: Song) {
+    this.currentSong = song;
     if (song) {
-      this.currentSong = song;
       this.duration = this.currentSong.dt / 1000;// dt属性的值为歌曲总时长,单位为毫秒
     }
   }
@@ -180,6 +180,12 @@ export class WyPlayerComponent implements OnInit {
     } else {
       this.onNext();
     }
+  }
+
+  //播放错误,重置歌曲播放状态
+  onError() {
+    this.playing = false;
+    this.bufferPercent = 0;
   }
 
   // 播放/暂停
@@ -257,10 +263,13 @@ export class WyPlayerComponent implements OnInit {
     return this.currentSong ? this.currentSong.al.picUrl : '//s4.music.126.net/style/web2/img/default/default_album.jpg';
   }
 
-  onClickOutside() {
-    this.showVolumePanel = false;
-    this.showPanel = false;
-    this.bindFlag = false;
+  onClickOutside(target:HTMLElement) {
+    // 来解决点击歌曲面板中每个歌曲的删除按钮时，面板消失的问题
+    if (target.dataset.act!=='delete'){
+      this.showVolumePanel = false;
+      this.showPanel = false;
+      this.bindFlag = false;
+    }
   }
 
   onPercentChange(per) {
