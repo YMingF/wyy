@@ -1,6 +1,6 @@
 <div class="m-layer"
      #modalContainer
-     *ngIf="showModal"
+     [style.visibility]="showModal?'visible':'hidden'"
      cdkDrag
      cdkDragBoundary=".cdk-overlay-container">
   <div class="zbar" cdkDragHandle>
