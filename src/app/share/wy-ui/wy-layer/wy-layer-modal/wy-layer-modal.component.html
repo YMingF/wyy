@@ -1,9 +1,10 @@
 <div class="m-layer"
+     cdkDrag
+     cdkDragBoundary=".cdk-overlay-container"
      [@showHide]="showModal"
      #modalContainer
-     cdkDrag
-     cdkDragBoundary=".cdk-overlay-container">
-  <div class="zbar" cdkDragHandle>
+     >
+  <div cdkDragHandle class="zbar" >
     <div class="zttl f-thide"></div>
   </div>
   <ng-container [ngSwitch]="">
