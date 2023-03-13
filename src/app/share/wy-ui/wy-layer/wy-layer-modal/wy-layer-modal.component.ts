@@ -5,7 +5,7 @@ import { getModalType, getModalVisible } from "../../../../store/selectors/membe
 import { BlockScrollStrategy, OverlayRef, Overlay, OverlayKeyboardDispatcher } from '@angular/cdk/overlay';
 import { ModalTypes } from 'src/app/store/reducers/member.reducer';
 import { BatchActionsService } from 'src/app/store/batch-actions.service';
-
+import { APOSTROPHE } from '@angular/cdk/keycodes';
 @Component({
   selector: 'app-wy-layer-modal',
   templateUrl: './wy-layer-modal.component.html',
