@@ -1,12 +1,13 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {HomeService} from '../../service/home.service';
-import {Banner, HotTag, Singer, SongSheet} from '../../service/data-types/common.types';
-import {NzCarouselComponent} from 'ng-zorro-antd/carousel';
-import {SingerService} from '../../service/singer.service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {map} from 'rxjs/operators';
-import {SheetService} from '../../service/sheet.service';
-import {BatchActionsService} from '../../store/batch-actions.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { HomeService } from '../../service/home.service';
+import { Banner, HotTag, Singer, SongSheet } from '../../service/data-types/common.types';
+import { NzCarouselComponent } from 'ng-zorro-antd/carousel';
+import { SingerService } from '../../service/singer.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map } from 'rxjs/operators';
+import { SheetService } from '../../service/sheet.service';
+import { BatchActionsService } from '../../store/batch-actions.service';
+import { ModalTypes } from "../../store/reducers/member.reducer";
 
 @Component({
   selector: 'app-home',
@@ -60,6 +61,6 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/sheetInfo', id]);
   }
   openModal(){
-    this.batchActionServe.controlModal();
+    this.batchActionServe.controlModal(true,ModalTypes.Default);
   }
 }

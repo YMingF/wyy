@@ -2,6 +2,11 @@ import { Component } from '@angular/core';
 import { SearchService } from "./service/search.service";
 import { SearchResult } from "./service/data-types/common.types";
 import { isEmptyObject } from "./utils/tools";
+import { ModalTypes } from "./store/reducers/member.reducer";
+import { Store } from "@ngrx/store";
+import { AppStoreModule } from "./store";
+import { SetModalType } from "./store/actions/member.action";
+import { BatchActionsService } from "./store/batch-actions.service";
 
 @Component({
   selector: 'app-root',
@@ -18,18 +23,34 @@ export class AppComponent {
     path: '/sheet'
   }];
   searchResult: any;
-  constructor(private searchServe: SearchService) {
+
+  constructor(
+    private searchServe: SearchService,
+    private store$: Store<AppStoreModule>,
+    private batchActionServe: BatchActionsService,) {
+  }
+
+  //改变弹窗类型
+  onChangeModalType(type = ModalTypes.Default) {
+    this.store$.dispatch(SetModalType({modalType: type}));
+
+  }
+
+  // 打开弹窗
+  openModal(type: ModalTypes) {
+    this.batchActionServe.controlModal(true, type);
   }
 
   onSearch(keyWords: string) {
     if (keyWords) {
       this.searchServe.search(keyWords).subscribe(res => {
-        this.searchResult = this.highLightKeyWords(keyWords,res);
+        this.searchResult = this.highLightKeyWords(keyWords, res);
       });
     } else {
       this.searchResult = {};
     }
   }
+
   // 将返回值里和搜索内容一致的数据设置颜色以高亮展示
   highLightKeyWords(keyWords: string,result:SearchResult):SearchResult{
     if (!isEmptyObject(result)){

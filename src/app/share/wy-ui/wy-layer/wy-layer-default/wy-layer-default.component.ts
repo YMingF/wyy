@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WyLayerDefaultComponent implements OnInit {
-  @Output() onChangeModalType = new EventEmitter<string>();
+  @Output() onChangeModalType = new EventEmitter<string|void>();
 
   constructor() {
   }

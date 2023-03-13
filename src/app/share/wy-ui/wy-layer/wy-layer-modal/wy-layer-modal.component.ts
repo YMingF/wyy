@@ -76,6 +76,7 @@ export class WyLayerModalComponent implements OnInit, AfterViewInit {
   watchModalType(type: ModalTypes) {
     if (this.currentModalType !== type) {
       this.currentModalType = type;
+      this.cdr.markForCheck();
     }
   }
 
