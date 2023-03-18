@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { SearchService } from "./service/search.service";
-import { SearchResult } from "./service/data-types/common.types";
+import { LoginParams, SearchResult } from "./service/data-types/common.types";
 import { isEmptyObject } from "./utils/tools";
 import { ModalTypes } from "./store/reducers/member.reducer";
 import { Store } from "@ngrx/store";
 import { AppStoreModule } from "./store";
 import { SetModalType } from "./store/actions/member.action";
 import { BatchActionsService } from "./store/batch-actions.service";
+import { MemberService } from "./service/member.service";
+import { User } from "./service/data-types/member.type";
+import { NzMessageService } from "ng-zorro-antd";
 
 @Component({
   selector: 'app-root',
@@ -23,11 +26,14 @@ export class AppComponent {
     path: '/sheet'
   }];
   searchResult: any;
+  user: User;
 
   constructor(
     private searchServe: SearchService,
+    private memberServe: MemberService,
     private store$: Store<AppStoreModule>,
-    private batchActionServe: BatchActionsService,) {
+    private batchActionServe: BatchActionsService,
+    private messageServe: NzMessageService) {
   }
 
   //改变弹窗类型
@@ -52,17 +58,40 @@ export class AppComponent {
   }
 
   // 将返回值里和搜索内容一致的数据设置颜色以高亮展示
-  highLightKeyWords(keyWords: string,result:SearchResult):SearchResult{
-    if (!isEmptyObject(result)){
-      const reg=new RegExp(keyWords,'ig');
-      ['artists', 'playlists', 'songs'].forEach(type=>{
-        if (result[type]){
-          result[type].forEach(item=>{
-            item.name=item.name.replace(reg,'<span class="highLight">$&<\/span>')
-          })
+  highLightKeyWords(keyWords: string, result: SearchResult): SearchResult {
+    if (!isEmptyObject(result)) {
+      const reg = new RegExp(keyWords, 'ig');
+      ['artists', 'playlists', 'songs'].forEach(type => {
+        if (result[type]) {
+          result[type].forEach(item => {
+            item.name = item.name.replace(reg, '<span class="highLight">$&<\/span>');
+          });
         }
-      })
+      });
       return result;
     }
+  }
+
+  // 登录
+  onLogin(params: LoginParams) {
+    this.memberServe.login(params).subscribe((user: User) => {
+        this.user = user;
+        this.batchActionServe.controlModal(false);
+        this.alertMessage('success', '登陆成功');
+        localStorage.setItem('wyUserId', user.profile.userId.toString());
+        if (params.remember) {
+          localStorage.setItem('wyRememberLogin', JSON.stringify(params));
+        } else {
+          localStorage.removeItem('wyRememberLogin');
+        }
+      }, ({error}) => {
+        this.alertMessage('error', error.message || '登陆失败');
+      }
+    );
+
+  }
+
+  alertMessage(type: string, msg: string) {
+    this.messageServe.create(type, msg);
   }
 }

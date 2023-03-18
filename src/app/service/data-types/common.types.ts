@@ -73,3 +73,9 @@ export type SearchResult = {
   playlists: SongSheet[],
   songs?: Song[]
 }
+
+export type LoginParams = {
+  phone: string,
+  password: string,
+  remember: boolean
+}
