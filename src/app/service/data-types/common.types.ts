@@ -79,3 +79,9 @@ export type LoginParams = {
   password: string,
   remember: boolean
 }
+
+export type sampleBack = {
+  code:number;
+  [key: string]: any
+
+}

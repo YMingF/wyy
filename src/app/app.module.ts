@@ -6,20 +6,22 @@ import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzLayoutModule} from 'ng-zorro-antd/layout';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {FormsModule} from '@angular/forms';
+import { NzAvatarModule } from "ng-zorro-antd";
 
 @NgModule({
    declarations: [
       AppComponent
    ],
-   imports: [
-      CoreModule,
-      NzMenuModule,
-      NzInputModule,
-      NzLayoutModule,
-      NzIconModule,
-     FormsModule,
+    imports: [
+        CoreModule,
+        NzMenuModule,
+        NzInputModule,
+        NzLayoutModule,
+        NzIconModule,
+        FormsModule,
+        NzAvatarModule,
 
-   ],
+    ],
    bootstrap: [AppComponent]
 })
 export class AppModule {}

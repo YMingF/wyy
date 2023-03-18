@@ -34,6 +34,12 @@ export class AppComponent {
     private store$: Store<AppStoreModule>,
     private batchActionServe: BatchActionsService,
     private messageServe: NzMessageService) {
+    const userId = localStorage.getItem('wyUserId');
+    if (userId) {
+      this.memberServe.getUserDetail(userId).subscribe(user => {
+        this.user = user;
+      });
+    }
   }
 
   //改变弹窗类型
@@ -93,5 +99,15 @@ export class AppComponent {
 
   alertMessage(type: string, msg: string) {
     this.messageServe.create(type, msg);
+  }
+
+  onLogout() {
+    this.memberServe.logOut().subscribe(() => {
+      this.user = null;
+      this.alertMessage('success', '退出成功');
+      localStorage.removeItem('wyUserId');
+    }, error => {
+      this.alertMessage('error', error.message || '退出失败');
+    });
   }
 }
