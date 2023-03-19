@@ -27,7 +27,7 @@ export class AppComponent {
   }];
   searchResult: any;
   user: User;
-
+  wyRememberLogin: LoginParams;
   constructor(
     private searchServe: SearchService,
     private memberServe: MemberService,
@@ -39,6 +39,10 @@ export class AppComponent {
       this.memberServe.getUserDetail(userId).subscribe(user => {
         this.user = user;
       });
+    }
+    const wyRememberLogin = localStorage.getItem('wyRememberLogin');
+    if (wyRememberLogin) {
+      this.wyRememberLogin = JSON.parse(wyRememberLogin);
     }
   }
 

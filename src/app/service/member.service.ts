@@ -4,9 +4,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { LoginParams, sampleBack } from "./data-types/common.types";
 import { Observable } from "rxjs";
 import { User } from "./data-types/member.type";
-import * as querystring from "querystring";
 import { map } from "rxjs/operators";
-
+import queryString from "query-string"
 @Injectable({
   providedIn: ServiceModule
 })
@@ -16,13 +15,14 @@ export class MemberService {
   }
 
   login(formValue: LoginParams): Observable<User> {
-    const params = new HttpParams({fromString: querystring.stringify(formValue)});
-    return this.http.get(this.url + 'login/cellphone', {params}).pipe(map((res) => res as User));
+    const params = new HttpParams({ fromString: queryString.stringify(formValue) });
+    return this.http.get(this.url + 'login/cellphone', { params })
+      .pipe(map(res => res as User));
   }
 
   // 获取用户详情
   getUserDetail(uid: string): Observable<User> {
-    const params = new HttpParams({fromString: querystring.stringify(uid)});
+    const params = new HttpParams({fromString: queryString.stringify(uid)});
     return this.http.get(this.url + 'user/detail', {params}).pipe(map((res) => res as User));
   }
 
