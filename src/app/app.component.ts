@@ -10,6 +10,8 @@ import { BatchActionsService } from "./store/batch-actions.service";
 import { MemberService } from "./service/member.service";
 import { User } from "./service/data-types/member.type";
 import { NzMessageService } from "ng-zorro-antd";
+import { codeJson } from "./utils/base64";
+import { StorageService } from "./service/storage.service";
 
 @Component({
   selector: 'app-root',
@@ -28,19 +30,22 @@ export class AppComponent {
   searchResult: any;
   user: User;
   wyRememberLogin: LoginParams;
+
   constructor(
     private searchServe: SearchService,
     private memberServe: MemberService,
     private store$: Store<AppStoreModule>,
     private batchActionServe: BatchActionsService,
-    private messageServe: NzMessageService) {
-    const userId = localStorage.getItem('wyUserId');
+    private messageServe: NzMessageService,
+    private storageServe: StorageService
+  ) {
+    const userId = this.storageServe.getStorage('wyUserId');
     if (userId) {
       this.memberServe.getUserDetail(userId).subscribe(user => {
         this.user = user;
       });
     }
-    const wyRememberLogin = localStorage.getItem('wyRememberLogin');
+    const wyRememberLogin = this.storageServe.getStorage('wyRememberLogin');
     if (wyRememberLogin) {
       this.wyRememberLogin = JSON.parse(wyRememberLogin);
     }
@@ -87,12 +92,12 @@ export class AppComponent {
     this.memberServe.login(params).subscribe((user: User) => {
         this.user = user;
         this.batchActionServe.controlModal(false);
-        this.alertMessage('success', '登陆成功');
-        localStorage.setItem('wyUserId', user.profile.userId.toString());
+      this.alertMessage('success', '登陆成功');
+      this.storageServe.setStorage({key: 'wyUserId', value: user.profile.userId});
         if (params.remember) {
-          localStorage.setItem('wyRememberLogin', JSON.stringify(params));
+          this.storageServe.setStorage({key: 'wyRememberLogin', value: JSON.stringify(codeJson(params))});
         } else {
-          localStorage.removeItem('wyRememberLogin');
+          this.storageServe.removeStorage('wyRememberLogin');
         }
       }, ({error}) => {
         this.alertMessage('error', error.message || '登陆失败');
@@ -109,7 +114,7 @@ export class AppComponent {
     this.memberServe.logOut().subscribe(() => {
       this.user = null;
       this.alertMessage('success', '退出成功');
-      localStorage.removeItem('wyUserId');
+      this.storageServe.removeStorage('wyUserId');
     }, error => {
       this.alertMessage('error', error.message || '退出失败');
     });

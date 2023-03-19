@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { LoginParams } from "../../../../service/data-types/common.types";
+import { codeJson } from "../../../../utils/base64";
 
 @Component({
   selector: 'app-wy-layer-login',
@@ -31,7 +32,6 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
   }
 
   onSubmit() {
-    console.log('触发了');
     const model = this.formModel;
     if (model.valid) {
       this.onLogin.emit(model.value);
@@ -51,11 +51,11 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
       let phone = '';
       let password = '';
       let remember = false;
-      const value = userLoginParams.currentValue;
-      if (value) {
+      if (userLoginParams.currentValue) {
+        const value = codeJson(userLoginParams.currentValue, 'decode');
         [phone, password, remember] = [value.phone, value.password, value.remember];
       }
-      this.setModel({phone,password,remember});
+      this.setModel({phone, password, remember});
     }
   }
 }
