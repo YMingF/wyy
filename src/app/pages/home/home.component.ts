@@ -8,6 +8,11 @@ import { map } from 'rxjs/operators';
 import { SheetService } from '../../service/sheet.service';
 import { BatchActionsService } from '../../store/batch-actions.service';
 import { ModalTypes } from "../../store/reducers/member.reducer";
+import { AppStoreModule } from "../../store";
+import { select, Store } from "@ngrx/store";
+import { getMember, getUserId } from "../../store/selectors/member.selector";
+import { MemberService } from "../../service/member.service";
+import { User } from "../../service/data-types/member.type";
 
 @Component({
   selector: 'app-home',
@@ -22,20 +27,35 @@ export class HomeComponent implements OnInit {
   HotTags: HotTag[];
   singers: Singer[];
   songSheetList: SongSheet[];
-
+  user: User;
   constructor(
     private homeService: HomeService,
     private singerService: SingerService,
     private route: ActivatedRoute,
     private sheetService: SheetService,
     private batchActionServe: BatchActionsService,
-    private router: Router
+    private router: Router,
+    private store$: Store<AppStoreModule>,
+    private memberServe: MemberService,
   ) {
     this.route.data.pipe(map(res => res['homeData'])).subscribe(([banners, tags, sheets, singer]) => {
       this.banners = banners;
       this.HotTags = tags;
       this.songSheetList = sheets;
       this.singers = singer;
+    });
+    this.store$.pipe(select(getMember), select(getUserId)).subscribe(id => {
+      if (id) {
+        this.getUserDetail(id);
+      } else {
+        this.user = null;
+      }
+    });
+  }
+
+  getUserDetail(id: string) {
+    this.memberServe.getUserDetail(id).subscribe(res => {
+      this.user = res;
     });
   }
 

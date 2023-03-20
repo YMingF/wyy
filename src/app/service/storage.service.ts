@@ -11,20 +11,20 @@ export class StorageService {
   }
 
   getStorage(key: string, type = 'local'): string {
-    return this.win[type + 'Storage'].getItem(key);
+    return this.win[type + 'Storage'] && this.win[type + 'Storage'].getItem(key);
   }
 
   setStorage(params: AnyJson | AnyJson[], type = 'local') {
     const kv = Array.isArray(params) ? params : [params];
     for (const {key, value} of kv) {
-      this.win[type + 'Storage'].setItem(key, value.toString());
+      this.win[type + 'Storage'] && this.win[type + 'Storage'].setItem(key, value.toString());
     }
   }
 
   removeStorage(params: string | string[], type = 'local') {
     const kv = Array.isArray(params) ? params : [params];
     for (const key of kv) {
-      this.win[type + 'Storage'].removeItem(key);
+      this.win[type + 'Storage'] && this.win[type + 'Storage'].removeItem(key);
     }
   }
 }

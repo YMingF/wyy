@@ -5,7 +5,7 @@ import { isEmptyObject } from "./utils/tools";
 import { ModalTypes } from "./store/reducers/member.reducer";
 import { Store } from "@ngrx/store";
 import { AppStoreModule } from "./store";
-import { SetModalType } from "./store/actions/member.action";
+import { SetModalType, SetUserId } from "./store/actions/member.action";
 import { BatchActionsService } from "./store/batch-actions.service";
 import { MemberService } from "./service/member.service";
 import { User } from "./service/data-types/member.type";
@@ -41,6 +41,8 @@ export class AppComponent {
   ) {
     const userId = this.storageServe.getStorage('wyUserId');
     if (userId) {
+      this.store$.dispatch(SetUserId({id: userId}));
+
       this.memberServe.getUserDetail(userId).subscribe(user => {
         this.user = user;
       });
@@ -94,6 +96,7 @@ export class AppComponent {
         this.batchActionServe.controlModal(false);
       this.alertMessage('success', '登陆成功');
       this.storageServe.setStorage({key: 'wyUserId', value: user.profile.userId});
+      this.store$.dispatch(SetUserId({id: user.profile.userId.toString()}));
         if (params.remember) {
           this.storageServe.setStorage({key: 'wyRememberLogin', value: JSON.stringify(codeJson(params))});
         } else {
@@ -113,6 +116,7 @@ export class AppComponent {
   onLogout() {
     this.memberServe.logOut().subscribe(() => {
       this.user = null;
+      this.store$.dispatch(SetUserId({id: ''}));
       this.alertMessage('success', '退出成功');
       this.storageServe.removeStorage('wyUserId');
     }, error => {
