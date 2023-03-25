@@ -51,6 +51,15 @@ export class HomeComponent implements OnInit {
         this.user = null;
       }
     });
+
+    this.memberServe.generateKey().subscribe(key=>{
+      console.log('key');
+      console.log(key);
+      this.memberServe.generateCode(key).subscribe(item=>{
+        console.log('code二维码的信息e');
+        console.log(item);
+      })
+    })
   }
 
   getUserDetail(id: string) {
