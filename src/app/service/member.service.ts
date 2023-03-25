@@ -3,9 +3,10 @@ import { API_CONFIG, ServiceModule } from './service.module';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { LoginParams, SampleBack } from "./data-types/common.types";
 import { Observable } from "rxjs";
-import { User } from "./data-types/member.type";
+import { SignIn, User } from "./data-types/member.type";
 import { map } from "rxjs/operators";
-import queryString from "query-string"
+import queryString from "query-string";
+
 @Injectable({
   providedIn: ServiceModule
 })
@@ -29,5 +30,11 @@ export class MemberService {
   //退出登录
   logOut(): Observable<SampleBack> {
     return this.http.get(this.url + 'logout').pipe(map(res => res as SampleBack));
+  }
+
+  //   签到
+  signIn(): Observable<SignIn> {
+    const params = new HttpParams({fromString: queryString.stringify({type: 1})});
+    return this.http.get(this.url + 'daily_signin', {params}).pipe(map(res => res as SignIn));
   }
 }

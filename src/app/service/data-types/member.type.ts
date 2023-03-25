@@ -25,3 +25,9 @@ export interface User {
     eventCount: number;
   };
 }
+
+export type SignIn = {
+  code: number;
+  point?: number;
+  mgs?: number
+}

@@ -7,6 +7,7 @@ import {NzCarouselModule} from 'ng-zorro-antd/carousel';
 import {WyCarouselComponent} from './components/wy-carousel/wy-carousel.component';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import { MemberCardComponent } from './components/member-card/member-card.component';
+import { NzToolTipModule } from "ng-zorro-antd";
 
 
 @NgModule({
@@ -15,11 +16,12 @@ import { MemberCardComponent } from './components/member-card/member-card.compon
       WyCarouselComponent,
       MemberCardComponent
    ],
-   imports: [
-      HomeRoutingModule,
-      ShareModule,
-      NzCarouselModule,
-      NzIconModule
-   ]
+  imports: [
+    HomeRoutingModule,
+    ShareModule,
+    NzCarouselModule,
+    NzIconModule,
+    NzToolTipModule
+  ]
 })
 export class HomeModule {}
