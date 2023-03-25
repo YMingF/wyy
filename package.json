@@ -28,6 +28,8 @@
     "js-base64": "^2.5.1",
     "minireset.css": "0.0.5",
     "ng-zorro-antd": "^8.1.2",
+    "qrcodejs2": "^0.0.2",
+    "query-string": "^8.1.0",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"

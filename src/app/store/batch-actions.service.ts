@@ -4,14 +4,19 @@ import { Song } from '../service/data-types/common.types';
 import { select, Store } from '@ngrx/store';
 import { getPlayer } from './selectors/player.selector';
 import { CurrentActions, PlayState } from './reducers/player.reducer';
-import { SetCurrentAction, SetCurrentIndex, SetPlayList, SetSongList } from './actions/player.action';
+import {
+  SetCurrentAction,
+  SetCurrentIndex,
+  SetPlayList,
+  SetSongList,
+} from './actions/player.action';
 import { findSongIndex, shuffle } from '../utils/array';
-import { getMember } from "./selectors/member.selector";
-import { MemberState, ModalTypes } from "./reducers/member.reducer";
-import { SetModalType, SetModalVisible } from "./actions/member.action";
+import { getMember } from './selectors/member.selector';
+import { MemberState, ModalTypes } from './reducers/member.reducer';
+import { SetModalType, SetModalVisible } from './actions/member.action';
 
 @Injectable({
-  providedIn: AppStoreModule
+  providedIn: AppStoreModule,
 })
 export class BatchActionsService {
   private playerState: PlayState;
@@ -19,13 +24,17 @@ export class BatchActionsService {
 
   constructor(private store$: Store<AppStoreModule>) {
     // 获取总的State的值
-    this.store$.pipe(select(getPlayer)).subscribe(res => this.playerState = res);
-    this.store$.pipe(select(getMember)).subscribe(res => this.memberState = res);
+    this.store$
+      .pipe(select(getPlayer))
+      .subscribe((res) => (this.playerState = res));
+    this.store$
+      .pipe(select(getMember))
+      .subscribe((res) => (this.memberState = res));
   }
 
   // 播放列表
-  selectPlayList({list, index}: { list: Song[], index: number }) {
-    this.store$.dispatch(SetSongList({songList: list}));
+  selectPlayList({ list, index }: { list: Song[]; index: number }) {
+    this.store$.dispatch(SetSongList({ songList: list }));
     let playList = list.slice();
     let trueIndex = index;
     // 用于处理先切换播放模式，后点击歌单播放时，保证随机切歌的正确
@@ -33,9 +42,11 @@ export class BatchActionsService {
       playList = shuffle(list);
       trueIndex = findSongIndex(playList, list[trueIndex]);
     }
-    this.store$.dispatch(SetPlayList({playList}));
-    this.store$.dispatch(SetCurrentIndex({currentIndex: trueIndex}));
-    this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Play}));
+    this.store$.dispatch(SetPlayList({ playList }));
+    this.store$.dispatch(SetCurrentIndex({ currentIndex: trueIndex }));
+    this.store$.dispatch(
+      SetCurrentAction({ currentAction: CurrentActions.Play })
+    );
   }
 
   // 添加歌曲
@@ -55,14 +66,18 @@ export class BatchActionsService {
       if (isPlay) {
         insertIndex = songList.length - 1;
       }
-      this.store$.dispatch(SetSongList({songList}));
-      this.store$.dispatch(SetPlayList({playList}));
+      this.store$.dispatch(SetSongList({ songList }));
+      this.store$.dispatch(SetPlayList({ playList }));
     }
     if (insertIndex !== this.playerState.currentIndex) {
-      this.store$.dispatch(SetCurrentIndex({currentIndex: insertIndex}));
-      this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Play}));
-    }else{
-      this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Add}));
+      this.store$.dispatch(SetCurrentIndex({ currentIndex: insertIndex }));
+      this.store$.dispatch(
+        SetCurrentAction({ currentAction: CurrentActions.Play })
+      );
+    } else {
+      this.store$.dispatch(
+        SetCurrentAction({ currentAction: CurrentActions.Add })
+      );
     }
   }
 
@@ -77,41 +92,46 @@ export class BatchActionsService {
     if (currentIndex > pIndex || currentIndex === playList.length - 1) {
       currentIndex--;
     }
-    this.store$.dispatch(SetSongList({songList}));
-    this.store$.dispatch(SetPlayList({playList}));
-    this.store$.dispatch(SetCurrentIndex({currentIndex}));
-    this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Delete}));
-
+    this.store$.dispatch(SetSongList({ songList }));
+    this.store$.dispatch(SetPlayList({ playList }));
+    this.store$.dispatch(SetCurrentIndex({ currentIndex }));
+    this.store$.dispatch(
+      SetCurrentAction({ currentAction: CurrentActions.Delete })
+    );
   }
 
   clearSong() {
-    this.store$.dispatch(SetSongList({songList: []}));
-    this.store$.dispatch(SetPlayList({playList: []}));
-    this.store$.dispatch(SetCurrentIndex({currentIndex: -1}));
-    this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Clear}));
+    this.store$.dispatch(SetSongList({ songList: [] }));
+    this.store$.dispatch(SetPlayList({ playList: [] }));
+    this.store$.dispatch(SetCurrentIndex({ currentIndex: -1 }));
+    this.store$.dispatch(
+      SetCurrentAction({ currentAction: CurrentActions.Clear })
+    );
   }
 
-//  添加多首歌曲
+  //  添加多首歌曲
   insertSongs(songs: Song[]) {
     const songList = this.playerState.songList.slice();
     const playList = this.playerState.playList.slice();
-    songs.forEach(item => {
+    songs.forEach((item) => {
       const pIndex = findSongIndex(playList, item);
       if (pIndex === -1) {
         songList.push(item);
         playList.push(item);
       }
     });
-    this.store$.dispatch(SetSongList({songList}));
-    this.store$.dispatch(SetPlayList({playList}));
-    this.store$.dispatch(SetCurrentAction({currentAction: CurrentActions.Add}));
-  };
+    this.store$.dispatch(SetSongList({ songList }));
+    this.store$.dispatch(SetPlayList({ playList }));
+    this.store$.dispatch(
+      SetCurrentAction({ currentAction: CurrentActions.Add })
+    );
+  }
 
   // 会员弹窗显示隐藏/类型
-  controlModal(modalVisible=true,modalType?:ModalTypes){
-    if (modalType){
-      this.store$.dispatch(SetModalType({modalType}));
+  controlModal(modalVisible = true, modalType?: ModalTypes) {
+    if (modalType) {
+      this.store$.dispatch(SetModalType({ modalType }));
     }
-    this.store$.dispatch(SetModalVisible({modalVisible}));
+    this.store$.dispatch(SetModalVisible({ modalVisible }));
   }
 }
