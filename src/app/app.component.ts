@@ -102,7 +102,7 @@ export class AppComponent {
         } else {
           this.storageServe.removeStorage('wyRememberLogin');
         }
-      }, ({error}) => {
+      }, (error) => {
         this.alertMessage('error', error.message || '登陆失败');
       }
     );
