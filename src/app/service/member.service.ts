@@ -16,23 +16,6 @@ export class MemberService {
     @Inject(API_CONFIG) private url: string
   ) {}
 
-  //获取生成二维码所需的key
-  generateKey() {
-    const timestamp = new Date().getTime();
-    const params = new HttpParams({
-      fromString: queryString.stringify({ timestamp }),
-    });
-    return this.http.get(this.url + 'login/qr/key', { params }).pipe(
-      map((res: { data: { unikey: string } }) => {
-        return res.data.unikey;
-      })
-    );
-  }
-
-  login(formValue: LoginParams): Observable<User> {
-    const params = new HttpParams({fromString: queryString.stringify(formValue)});
-    return this.http.get(this.url + 'login/cellphone', {params})
-      .pipe(map(res => res as User));
   //根据key生成二维码
   generateCode(key: string) {
     const timestamp = new Date().getTime();
@@ -53,23 +36,21 @@ export class MemberService {
   //获取生成二维码所需的key
   generateKey() {
     const timestamp = new Date().getTime();
-    const params = new HttpParams({fromString: queryString.stringify({timestamp})});
-    return this.http.get(this.url + 'login/qr/key', {params}).pipe(map((res: { data: { unikey: string } }) => {
-      return res.data.unikey;
-    }));
-  }
-
-  //根据key生成二维码
-  generateCode(key: string) {
-    const timestamp = new Date().getTime();
-    const params = new HttpParams({fromString: queryString.stringify({key,timestamp})});
-    return this.http.get(this.url + 'login/qr/create', {params});
-
+    const params = new HttpParams({
+      fromString: queryString.stringify({ timestamp }),
+    });
+    return this.http.get(this.url + 'login/qr/key', { params }).pipe(
+      map((res: { data: { unikey: string } }) => {
+        return res.data.unikey;
+      })
+    );
   }
 
   // 获取用户详情
   getUserDetail(uid: string): Observable<User> {
-    const params = new HttpParams({ fromString: queryString.stringify(uid) });
+    const params = new HttpParams({
+      fromString: queryString.stringify({ uid }),
+    });
     return this.http
       .get(this.url + 'user/detail', { params })
       .pipe(map((res) => res as User));
