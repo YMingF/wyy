@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { User } from "../../../../service/data-types/member.type";
-import { MemberService } from "../../../../service/member.service";
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {User} from '../../../../service/data-types/member.type';
+import {MemberService} from '../../../../service/member.service';
+import {timer} from 'rxjs';
 
 @Component({
   selector: 'app-member-card',
@@ -10,8 +11,9 @@ import { MemberService } from "../../../../service/member.service";
 export class MemberCardComponent implements OnInit {
   @Input() user: User;
   @Output() openModal = new EventEmitter<void>();
+  point: number;
   tipTitle: string;
-  showTip = true;
+  showTip = false;
 
   constructor(
     private memberServe:MemberService
@@ -22,10 +24,15 @@ export class MemberCardComponent implements OnInit {
   }
 
   onSignIn() {
-    this.memberServe.signIn().subscribe(res=>{
-      console.log('result', res);
-    },err=>{
+    this.memberServe.signIn().subscribe(res => {
+      this.tipTitle = `积分+${res.point}`;
+      this.showTip = true;
+      timer(1500).subscribe(() => {
+        this.showTip = false;
+        this.tipTitle = '';
+      });
+    }, err => {
       console.log(err);
-    })
+    });
   }
 }
