@@ -1,0 +1,49 @@
+<div class="registerBox">
+  <div class="container">
+    <form
+      nz-form
+      class="login-form"
+      [formGroup]="formModel"
+      (ngSubmit)="onSubmit()"
+    >
+      <nz-form-item>
+        <nz-form-control nzHasFeedback nzErrorTip="请输入正确的手机号">
+          <nz-input-group nzPrefixIcon="mobile">
+            <input
+              type="tel"
+              nz-input
+              placeholder="请输入手机号"
+              formControlName="phone"
+            />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control nzHasFeedback nzErrorTip="请输入正确的密码">
+          <nz-input-group nzPrefixIcon="lock">
+            <input
+              type="password"
+              nz-input
+              placeholder="请输入密码"
+              formControlName="password"
+            />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <button
+          nz-button
+          class="login-form-button"
+          [disabled]="!formModel.valid"
+          nzType="primary"
+          nzBlock
+        >
+          下一步
+        </button>
+      </nz-form-item>
+    </form>
+  </div>
+  <div class="footer c0c73c2"><&nbsp;&nbsp;返回登录</div>
+</div>
