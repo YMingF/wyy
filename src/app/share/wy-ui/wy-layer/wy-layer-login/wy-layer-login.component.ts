@@ -35,7 +35,7 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
   formModel: FormGroup;
   nzToolClass: NzToolClass;
   qrcodeImg: string;
-
+  isScan = false;
   constructor(
     private fb: FormBuilder,
     private store$: Store<AppStoreModule>,
@@ -84,6 +84,8 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
       )
       .subscribe((finalData) => {
         const { code } = finalData;
+        this.isScan = code === 802;
+        this.cdr.markForCheck();
         if ([800, 803].includes(code)) {
           const fnObj = {
             800: () => this.nzToolClass.alertMessage('error', '二维码已过期!'),
@@ -96,7 +98,6 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
       });
   }
   getUserDetailByCookie(cookie: string) {
-    this.nzToolClass.alertMessage('success', '登陆成功!');
     this.memberServe.getUserStatus(cookie).subscribe((res) => {
       this.onLogin.emit(res);
     });

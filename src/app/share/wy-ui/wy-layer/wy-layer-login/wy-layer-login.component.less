@@ -1,3 +1,4 @@
+@import "../../../../../assets/styles/mixins";
 .m-footer {
   padding: 0 19px;
   height: 48px;
@@ -5,22 +6,52 @@
   border-radius: 0 0 4px 4px;
   line-height: 48px;
   background-color: #f7f7f7;
+  text-align: center;
   a {
     display: block;
-    &:first-child {
-      float: left;
-    }
-    &:last-child {
-      float: right;
-    }
   }
 }
-.login-phone {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .codeImg {
-    width: 128px;
-    height: 128px;
+.login-code {
+  h3 {
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .waitScan {
+    margin: 20px 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .phoneAppImg {
+      .icon("../images/phoneApp.png",125px,220px);
+      background-size: 120px 220px;
+    }
+    .codeImgBox {
+      margin-left: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      p {
+        margin: 0;
+      }
+      .codeImg {
+        width: 146px;
+        height: 146px;
+        padding: 4px;
+        margin: 13px 27px;
+      }
+    }
+  }
+  .scanningBox {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .scanningImg {
+      .icon("../images/scanOk.png",140px,140px);
+      background-size: 140px 140px;
+    }
   }
 }

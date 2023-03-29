@@ -1,5 +1,30 @@
-<div class="login-phone modal-content">
-  <img class="codeImg" alt="" [src]="qrcodeImg" />
+<div class="login-code modal-content">
+  <ng-container *ngIf="!isScan; else scanning">
+    <div class="waitScan">
+      <div class="phoneAppImg"></div>
+      <div class="codeImgBox">
+        <h3>扫码登录</h3>
+        <img class="codeImg" alt="" [src]="qrcodeImg" />
+        <p>
+          使用&nbsp;
+          <a
+            class="c0c73c2"
+            href="https://music.163.com/#/download"
+            target="_blank"
+          >
+            网易云音乐APP </a
+          >&nbsp;扫码登陆
+        </p>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #scanning>
+    <div class="scanningBox">
+      <div class="scanningImg"></div>
+      <h3>扫描成功</h3>
+      <p>请在手机上确认登录</p>
+    </div>
+  </ng-template>
 </div>
 
 <div class="m-footer clearfix">

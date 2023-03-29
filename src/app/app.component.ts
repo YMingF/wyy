@@ -96,21 +96,15 @@ export class AppComponent {
 
   // 登录
   onLogin(userData) {
-    this.user = userData;
+    const { data: user } = userData;
+    this.user = user;
+    this.nzToolClass.alertMessage('success', '登陆成功!');
     this.batchActionServe.controlModal(false);
     this.storageServe.setStorage({
       key: 'wyUserId',
-      value: userData.profile.userId,
+      value: user.profile.userId,
     });
-    this.store$.dispatch(SetUserId({ id: userData.profile.userId.toString() }));
-    // if (params.remember) {
-    //   this.storageServe.setStorage({
-    //     key: 'wyRememberLogin',
-    //     value: JSON.stringify(codeJson(params)),
-    //   });
-    // } else {
-    //   this.storageServe.removeStorage('wyRememberLogin');
-    // }
+    this.store$.dispatch(SetUserId({ id: user.profile.userId.toString() }));
   }
 
   onLogout() {
