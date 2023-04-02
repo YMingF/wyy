@@ -1,3 +1,5 @@
+import { Song, SongSheet } from './common.types';
+
 export interface User {
   // 等级
   level?: number;
@@ -29,5 +31,20 @@ export interface User {
 export type SignIn = {
   code: number;
   point?: number;
-  mgs?: number
-}
+  mgs?: number;
+};
+
+export type RecordVal = {
+  playCount: number;
+  score: number;
+  song: Song;
+};
+type recordKeys = 'weekData' | 'allData';
+export type UserRecord = {
+  [key in recordKeys]: RecordVal[];
+};
+
+export type UserSheet = {
+  self: SongSheet[]; //自己创建的歌单
+  subscribed: SongSheet[];
+};

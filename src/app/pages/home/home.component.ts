@@ -60,14 +60,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
       }
     });
 
-    this.memberServe.generateKey().subscribe(key=>{
-      console.log('key');
-      console.log(key);
-      this.memberServe.generateCode(key).subscribe(item=>{
-        console.log('code二维码的信息e');
-        console.log(item);
-      })
-    })
+    this.memberServe.generateKey().subscribe((key) => {
+      this.memberServe.generateCode(key).subscribe((item) => {});
+    });
   }
 
   getUserDetail(id: string) {
