@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import {
@@ -20,19 +20,21 @@ import {
 } from '../../../store/selectors/player.selector';
 import { takeUntil } from 'rxjs/internal/operators';
 import { findSongIndex } from '../../../utils/array';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-center',
   templateUrl: './center.component.html',
   styleUrls: ['./center.component.less'],
 })
-export class CenterComponent implements OnInit {
+export class CenterComponent implements OnInit, OnDestroy {
   user: User;
   records: RecordVal[];
   userSheet: UserSheet;
   recordType = RecordType.weekData;
   currentIndex = -1;
   currentSong: Song;
+  private destroy$ = new Subject();
   constructor(
     private batchActionServe: BatchActionsService,
     private sheetService: SheetService,
@@ -53,9 +55,14 @@ export class CenterComponent implements OnInit {
   }
 
   ngOnInit() {}
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   listenCurrentSong() {
     this.store$
-      .pipe(select(getPlayer), select(getCurrentSong))
+      .pipe(select(getPlayer), select(getCurrentSong), takeUntil(this.destroy$))
       .subscribe((song) => {
         this.currentSong = song;
         if (song) {
