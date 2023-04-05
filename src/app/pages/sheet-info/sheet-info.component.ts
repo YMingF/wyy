@@ -1,33 +1,37 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {map, takeUntil} from 'rxjs/internal/operators';
-import {AppStoreModule} from '../../store/index';
-import {select, Store} from '@ngrx/store';
-import {Observable, Subject} from 'rxjs';
-import {BatchActionsService} from '../../store/batch-actions.service';
-import {NzMessageService} from 'ng-zorro-antd';
-import {Singer, Song, SongSheet} from '../../service/data-types/common.types';
-import {SongService} from '../../service/song.service';
-import {getCurrentSong, getPlayer} from '../../store/selectors/player.selector';
-import {findSongIndex} from '../../utils/array';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { map, takeUntil } from 'rxjs/internal/operators';
+import { AppStoreModule } from '../../store/index';
+import { select, Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
+import { BatchActionsService } from '../../store/batch-actions.service';
+import { NzMessageService } from 'ng-zorro-antd';
+import { Singer, Song, SongSheet } from '../../service/data-types/common.types';
+import { SongService } from '../../service/song.service';
+import {
+  getCurrentSong,
+  getPlayer,
+} from '../../store/selectors/player.selector';
+import { findSongIndex } from '../../utils/array';
+import { ModalTypes } from '../../store/reducers/member.reducer';
 
 @Component({
   selector: 'app-sheet-info',
   templateUrl: './sheet-info.component.html',
-  styleUrls: ['./sheet-info.component.less']
+  styleUrls: ['./sheet-info.component.less'],
 })
 export class SheetInfoComponent implements OnInit, OnDestroy {
   sheetInfo: SongSheet;
 
   description = {
     short: '',
-    long: ''
+    long: '',
   };
 
   controlDesc = {
     isExpand: false,
     label: '展开',
-    iconCls: 'down'
+    iconCls: 'down',
   };
 
   currentSong: Song;
@@ -41,7 +45,7 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
     private batchActionServe: BatchActionsService,
     private nzMessageServe: NzMessageService
   ) {
-    this.route.data.pipe(map(res => res.sheetInfo)).subscribe(res => {
+    this.route.data.pipe(map((res) => res.sheetInfo)).subscribe((res) => {
       this.sheetInfo = res;
       if (res.description) {
         this.changeDesc(res.description);
@@ -50,39 +54,36 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   // 监听当前正在播放的歌曲
   private listenCurrent() {
     // takeUntil(this.destroy$) 表示当this.destroy$发射流的时候停止监听
-    this.store$.pipe(
-      select(getPlayer),
-      select(getCurrentSong),
-      takeUntil(this.destroy$)).subscribe(song => {
-      this.currentSong = song;
-      if (song) {
-        this.currentIndex = findSongIndex(this.sheetInfo.tracks, song);
-      } else {
-        this.currentIndex = -1;
-      }
-    });
+    this.store$
+      .pipe(select(getPlayer), select(getCurrentSong), takeUntil(this.destroy$))
+      .subscribe((song) => {
+        this.currentSong = song;
+        if (song) {
+          this.currentIndex = findSongIndex(this.sheetInfo.tracks, song);
+        } else {
+          this.currentIndex = -1;
+        }
+      });
   }
 
   private changeDesc(desc: string) {
     if (desc.length < 99) {
       this.description = {
         short: '<b>介绍:</b>' + this.replaceBr(desc),
-        long: ''
+        long: '',
       };
     } else {
       this.description = {
         short: '<b>介绍:</b>' + this.replaceBr(desc.slice(0, 99)) + '...',
-        long: '<b>介绍:</b>' + this.replaceBr(desc)
+        long: '<b>介绍:</b>' + this.replaceBr(desc),
       };
     }
   }
-
 
   private replaceBr(str: string): string {
     return str.replace(/\n/g, '<br/>');
@@ -99,13 +100,12 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
     }
   }
 
-
   // 添加一首歌曲
   onAddSong(song: Song, isPlay = false) {
     // 当前没正播放歌曲，或播放歌曲和想添加的歌曲不同时，才允许添加歌曲
     if (!this.currentSong || this.currentSong.id !== song.id) {
       // 获取歌曲的url，因为原数据song里没有url
-      this.songServe.getSongList(song).subscribe(list => {
+      this.songServe.getSongList(song).subscribe((list) => {
         if (list.length) {
           this.batchActionServe.insertSong(list[0], isPlay);
         } else {
@@ -116,10 +116,10 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
   }
 
   onAddSongs(songs: Song[], isPlay = false) {
-    this.songServe.getSongList(songs).subscribe(list => {
+    this.songServe.getSongList(songs).subscribe((list) => {
       if (list.length) {
         if (isPlay) {
-          this.batchActionServe.selectPlayList({list, index: 0});
+          this.batchActionServe.selectPlayList({ list, index: 0 });
         } else {
           this.batchActionServe.insertSongs(list);
         }
@@ -127,29 +127,26 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
     });
   }
 
-
   // 收藏歌单
-  onLikeSheet(id: string) {
-
-  }
-
+  onLikeSheet(id: string) {}
 
   // 收藏歌曲
   onLikeSong(id: string) {
+    this.batchActionServe.likeSong(id);
   }
 
   // 分享
-  shareResource(resource: Song | SongSheet, type = 'song') {
+  shareResource(resource: Song | SongSheet, type = 'song') {}
 
-  }
-
-  private makeTxt(type: string, name: string, makeBy: string | Singer[]): string {
+  private makeTxt(
+    type: string,
+    name: string,
+    makeBy: string | Singer[]
+  ): string {
     return '';
   }
 
-
-  private alertMessage(type: string, msg: string) {
-  }
+  private alertMessage(type: string, msg: string) {}
 
   ngOnDestroy(): void {
     this.destroy$.next();

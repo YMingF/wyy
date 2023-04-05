@@ -1,11 +1,19 @@
 import { Component } from '@angular/core';
 import { SearchService } from './service/search.service';
-import { LoginParams, SearchResult } from './service/data-types/common.types';
+import {
+  LoginParams,
+  SearchResult,
+  SongSheet,
+} from './service/data-types/common.types';
 import { isEmptyObject, NzToolClass } from './utils/tools';
 import { ModalTypes } from './store/reducers/member.reducer';
 import { Store } from '@ngrx/store';
 import { AppStoreModule } from './store';
-import { SetModalType, SetUserId } from './store/actions/member.action';
+import {
+  SetModalType,
+  SetModalVisible,
+  SetUserId,
+} from './store/actions/member.action';
 import { BatchActionsService } from './store/batch-actions.service';
 import { MemberService } from './service/member.service';
 import { User } from './service/data-types/member.type';
@@ -33,6 +41,7 @@ export class AppComponent {
   user: User;
   wyRememberLogin: LoginParams;
   nzToolClass: NzToolClass;
+  mySheets: SongSheet[];
   constructor(
     private searchServe: SearchService,
     private memberServe: MemberService,
@@ -119,5 +128,18 @@ export class AppComponent {
         this.nzToolClass.alertMessage('error', error.message || '退出失败');
       }
     );
+  }
+  // 获取当前用户的歌单
+  onLoadMySheets() {
+    if (this.user) {
+      this.memberServe
+        .getUserSheets(this.user.profile.userId.toString())
+        .subscribe((userSheet) => {
+          this.mySheets = userSheet.self;
+          this.store$.dispatch(SetModalVisible({ modalVisible: true }));
+        });
+    } else {
+      this.openModal(ModalTypes.Default);
+    }
   }
 }
