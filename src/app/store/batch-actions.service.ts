@@ -13,7 +13,11 @@ import {
 import { findSongIndex, shuffle } from '../utils/array';
 import { getMember } from './selectors/member.selector';
 import { MemberState, ModalTypes } from './reducers/member.reducer';
-import { SetModalType, SetModalVisible } from './actions/member.action';
+import {
+  SetLikeId,
+  SetModalType,
+  SetModalVisible,
+} from './actions/member.action';
 
 @Injectable({
   providedIn: AppStoreModule,
@@ -137,5 +141,6 @@ export class BatchActionsService {
   //收藏歌曲
   likeSong(id: string) {
     this.store$.dispatch(SetModalType({ modalType: ModalTypes.Like }));
+    this.store$.dispatch(SetLikeId({ id }));
   }
 }
