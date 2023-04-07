@@ -127,4 +127,13 @@ export class MemberService {
       .get(this.url + 'playlist/tracks', { params })
       .pipe(map((res: SampleBack) => res.code));
   }
+  // 新建歌单
+  createSheet(name: string): Observable<string> {
+    const params = new HttpParams({
+      fromString: queryString.stringify({ name }),
+    });
+    return this.http
+      .get(this.url + 'playlist/create', { params })
+      .pipe(map((res: SampleBack) => res.id.toString()));
+  }
 }

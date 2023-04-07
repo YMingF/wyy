@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { SearchService } from './service/search.service';
 import {
   LoginParams,
@@ -125,6 +125,18 @@ export class AppComponent {
       }
     );
   }
+
+  onCreateSheet(sheetName: string) {
+    this.memberServe.createSheet(sheetName).subscribe(
+      (pid) => {
+        this.onLikeSong({ pid, tracks: this.likeId });
+      },
+      (error) => {
+        this.nzToolClass.alertMessage('error', error.msg || '新建失败');
+      }
+    );
+  }
+
   // private watchShareInfo(info: ShareInfo) {
   //   if (info) {
   //     if (this.user) {

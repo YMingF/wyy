@@ -95,8 +95,10 @@
   ></app-wy-layer-default>
   <app-wy-layer-like
     name="like"
+    [visible]='visible'
     [likeId]="likeId"
     [mySheets]="mySheets"
     (onLikeSong)='onLikeSong($event)'
+    (onCreateSheet)='onCreateSheet($event)'
   ></app-wy-layer-like>
 </app-wy-layer-modal>
