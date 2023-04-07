@@ -224,4 +224,6 @@ export class AppComponent {
       this.openModal(ModalTypes.Default);
     }
   }
+
+  protected readonly ModalTypes = ModalTypes;
 }

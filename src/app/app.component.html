@@ -3,7 +3,7 @@
     <nz-header class="header">
       <div class="wrap">
         <div class="left">
-          <h1>Music</h1>
+          <h1 class='headerPic' [routerLink]="['/home']">Music</h1>
           <ul nz-menu nzTheme="dark" nzMode="horizontal">
             <li nz-menu-item *ngFor="let item of menu" [routerLink]="item.path">
               {{ item.label }}
@@ -24,12 +24,12 @@
                     <i nz-icon nzType="down" nzTheme="outline"></i>
                   </div>
                   <ul>
-                    <li nz-menu-item (click)="openModal('loginByPhone')">
-                      <i nz-icon nzType="mobile" nzTheme="outline"></i>
+                    <li nz-menu-item (click)='openModal(ModalTypes.LoginByPhone)'>
+                      <i nz-icon nzType='mobile' nzTheme='outline'></i>
                       扫码登陆
                     </li>
-                    <li nz-menu-item (click)="openModal('register')">
-                      <i nz-icon nzType="user-add" nzTheme="outline"></i>
+                    <li nz-menu-item (click)='openModal(ModalTypes.Register)'>
+                      <i nz-icon nzType='user-add' nzTheme='outline'></i>
                       注册
                     </li>
                     <li></li>
