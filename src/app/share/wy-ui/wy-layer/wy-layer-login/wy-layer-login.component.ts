@@ -32,6 +32,7 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
   @Input() wyRememberLogin: LoginParams;
   @Output() onChangeModalType = new EventEmitter<string | void>();
   @Output() onLogin = new EventEmitter<any>();
+  @Output() isSpinning = new EventEmitter<boolean>();
   formModel: FormGroup;
   nzToolClass: NzToolClass;
   qrcodeImg: string;
@@ -84,11 +85,11 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
       )
       .subscribe((finalData) => {
         const { code } = finalData;
-        this.isScan = code === 802;
+        this.isScan = true;
         this.cdr.markForCheck();
         if ([800, 803].includes(code)) {
           const fnObj = {
-            800: () => this.nzToolClass.alertMessage('error', '二维码已过期!'),
+            800: () => this.handleCodeExpire.bind(this),
             803: this.getUserDetailByCookie.bind(this, finalData.cookie),
           };
 
@@ -97,9 +98,16 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
         }
       });
   }
+
+  handleCodeExpire() {
+    this.nzToolClass.alertMessage('error', '二维码已过期!');
+  }
+
   getUserDetailByCookie(cookie: string) {
+    this.isSpinning.emit(true);
     this.memberServe.getUserStatus(cookie).subscribe((res) => {
       this.onLogin.emit(res);
+      this.isSpinning.emit(false);
     });
   }
 

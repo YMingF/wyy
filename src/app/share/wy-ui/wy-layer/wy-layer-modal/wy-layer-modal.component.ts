@@ -55,6 +55,7 @@ export class WyLayerModalComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild('modalContainer', { static: false }) private modalRef: ElementRef;
   @Output() onLoadMySheets = new EventEmitter<void>();
   @Input() currentModalType = ModalTypes.Default;
+  @Input() isSpinning: boolean;
   overlayRef: OverlayRef;
   showModal = 'hide';
   scrollStrategy: BlockScrollStrategy;

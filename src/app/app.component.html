@@ -3,7 +3,7 @@
     <nz-header class="header">
       <div class="wrap">
         <div class="left">
-          <h1 class='headerPic' [routerLink]="['/home']">Music</h1>
+          <h1 [routerLink]="['/home']">Music</h1>
           <ul nz-menu nzTheme="dark" nzMode="horizontal">
             <li nz-menu-item *ngFor="let item of menu" [routerLink]="item.path">
               {{ item.label }}
@@ -81,10 +81,12 @@
   [visible]="visible"
   [currentModalType]="currentModalType"
   (onLoadMySheets)="onLoadMySheets()"
+  [isSpinning]='isSpinning'
 >
   <app-wy-layer-login
     name="login"
-    (onLogin)="onLogin($event)"
+    (onLogin)='onLogin($event)'
+    (isSpinning)='isSpinning=$event'
     [wyRememberLogin]="wyRememberLogin"
     (onChangeModalType)="onChangeModalType($event)"
   ></app-wy-layer-login>

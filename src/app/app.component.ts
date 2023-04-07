@@ -59,7 +59,7 @@ export class AppComponent {
 
   // 弹窗类型
   currentModalType = ModalTypes.Default;
-
+  isSpinning = false;
   constructor(
     private searchServe: SearchService,
     private memberServe: MemberService,
