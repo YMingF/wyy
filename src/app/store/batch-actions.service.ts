@@ -18,6 +18,7 @@ import {
   SetModalType,
   SetModalVisible,
 } from './actions/member.action';
+import { timer } from 'rxjs';
 
 @Injectable({
   providedIn: AppStoreModule,
@@ -137,6 +138,11 @@ export class BatchActionsService {
       this.store$.dispatch(SetModalType({ modalType }));
     }
     this.store$.dispatch(SetModalVisible({ modalVisible }));
+    if (!modalVisible) {
+      timer(500).subscribe(() => {
+        this.store$.dispatch(SetModalType({ modalType: ModalTypes.Default }));
+      });
+    }
   }
   //收藏歌曲
   likeSong(id: string) {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { SearchService } from './service/search.service';
 import {
   LoginParams,
@@ -7,7 +7,7 @@ import {
 } from './service/data-types/common.types';
 import { isEmptyObject, NzToolClass } from './utils/tools';
 import { ModalTypes } from './store/reducers/member.reducer';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { AppStoreModule } from './store';
 import {
   SetModalType,
@@ -15,10 +15,16 @@ import {
   SetUserId,
 } from './store/actions/member.action';
 import { BatchActionsService } from './store/batch-actions.service';
-import { MemberService } from './service/member.service';
+import { LikeSongParams, MemberService } from './service/member.service';
 import { User } from './service/data-types/member.type';
 import { NzMessageService } from 'ng-zorro-antd';
 import { StorageService } from './service/storage.service';
+import {
+  getLikeId,
+  getMember,
+  getModalType,
+  getModalVisible,
+} from './store/selectors/member.selector';
 
 @Component({
   selector: 'app-root',
@@ -42,6 +48,18 @@ export class AppComponent {
   wyRememberLogin: LoginParams;
   nzToolClass: NzToolClass;
   mySheets: SongSheet[];
+  // 被收藏歌曲的id
+  likeId: string;
+
+  // 弹窗显示
+  visible = false;
+
+  // 弹窗loading
+  showSpin = false;
+
+  // 弹窗类型
+  currentModalType = ModalTypes.Default;
+
   constructor(
     private searchServe: SearchService,
     private memberServe: MemberService,
@@ -63,8 +81,60 @@ export class AppComponent {
     if (wyRememberLogin) {
       this.wyRememberLogin = JSON.parse(wyRememberLogin);
     }
+    this.listenStates();
+  }
+  private listenStates() {
+    const appStore$ = this.store$.pipe(select(getMember));
+    appStore$.pipe(select(getLikeId)).subscribe((id) => this.watchLikeId(id));
+    appStore$
+      .pipe(select(getModalVisible))
+      .subscribe((visible) => this.watchModalVisible(visible));
+    appStore$
+      .pipe(select(getModalType))
+      .subscribe((type) => this.watchModalType(type));
+  }
+  private watchModalVisible(visible: boolean) {
+    if (this.visible !== visible) {
+      this.visible = visible;
+    }
+  }
+  private watchModalType(type: ModalTypes) {
+    if (this.currentModalType !== type) {
+      if (type === ModalTypes.Like) {
+        this.onLoadMySheets();
+      }
+      this.currentModalType = type;
+    }
   }
 
+  private watchLikeId(id: string) {
+    if (id) {
+      this.likeId = id;
+    }
+  }
+  // 收藏歌曲
+  onLikeSong(args: LikeSongParams) {
+    console.log('onlikesong', args);
+    this.memberServe.likeSong(args).subscribe(
+      () => {
+        this.batchActionServe.controlModal(false);
+        this.nzToolClass.alertMessage('success', '收藏成功!');
+      },
+      (error) => {
+        this.nzToolClass.alertMessage('error', error.msg || '收藏失败');
+      }
+    );
+  }
+  // private watchShareInfo(info: ShareInfo) {
+  //   if (info) {
+  //     if (this.user) {
+  //       this.shareInfo = info;
+  //       this.openModal(ModalTypes.Share);
+  //     } else {
+  //       this.openModal(ModalTypes.Default);
+  //     }
+  //   }
+  // }
   //改变弹窗类型
   onChangeModalType(type = ModalTypes.Default) {
     this.store$.dispatch(SetModalType({ modalType: type }));

@@ -6,17 +6,17 @@ import {
   ElementRef,
   EventEmitter,
   Inject,
+  Input,
+  OnChanges,
   OnInit,
   Output,
   Renderer2,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { createSelector, select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { AppStoreModule } from '../../../../store';
-import {
-  getModalType,
-  getModalVisible,
-} from '../../../../store/selectors/member.selector';
+
 import {
   BlockScrollStrategy,
   Overlay,
@@ -25,10 +25,7 @@ import {
   OverlayRef,
 } from '@angular/cdk/overlay';
 import { BatchActionsService } from 'src/app/store/batch-actions.service';
-import {
-  MemberState,
-  ModalTypes,
-} from '../../../../store/reducers/member.reducer';
+import { ModalTypes } from '../../../../store/reducers/member.reducer';
 import { APOSTROPHE } from '@angular/cdk/keycodes';
 import { DOCUMENT } from '@angular/common';
 import { WINDOW } from '../../../../service/service.module';
@@ -53,11 +50,11 @@ import {
     ]),
   ],
 })
-export class WyLayerModalComponent implements OnInit, AfterViewInit {
+export class WyLayerModalComponent implements OnInit, AfterViewInit, OnChanges {
+  @Input() visible = false;
   @ViewChild('modalContainer', { static: false }) private modalRef: ElementRef;
   @Output() onLoadMySheets = new EventEmitter<void>();
-  visible = false;
-  currentModalType = ModalTypes.Default;
+  @Input() currentModalType = ModalTypes.Default;
   overlayRef: OverlayRef;
   showModal = 'hide';
   scrollStrategy: BlockScrollStrategy;
@@ -77,41 +74,13 @@ export class WyLayerModalComponent implements OnInit, AfterViewInit {
     @Inject(WINDOW) private win: Window,
     private overlayContainerServe: OverlayContainer
   ) {
-    const selectMember = createSelector(
-      (state: { member: MemberState }) => state.member,
-      (member) => member
-    );
-    const appStore$ = this.store$.pipe(select(selectMember));
-    appStore$.pipe(select(getModalVisible)).subscribe((visible) => {
-      this.watchModalVisible(visible);
-    });
-    appStore$.pipe(select(getModalType)).subscribe((type) => {
-      this.watchModalType(type);
-    });
     this.scrollStrategy = this.overlay.scrollStrategies.block();
   }
-
-  watchModalVisible(visible: boolean) {
-    if (this.visible !== visible) {
-      this.visible = visible;
-      this.handleVisibleChange(visible);
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['visible'] && !changes['visible'].firstChange) {
+      this.handleVisibleChange(this.visible);
     }
   }
-
-  watchModalType(type: ModalTypes) {
-    if (this.currentModalType !== type) {
-      this.currentModalType = type;
-      if (type === ModalTypes.Like) {
-        this.onLoadMySheets.emit();
-      }
-      this.modalTitle =
-        this.currentModalType === ModalTypes.LoginByPhone
-          ? '登陆'
-          : '手机号注册';
-      this.cdr.markForCheck();
-    }
-  }
-
   ngOnInit() {
     this.createOverlay();
   }
@@ -121,6 +90,7 @@ export class WyLayerModalComponent implements OnInit, AfterViewInit {
     // 拿到overlay的Dom
     this.overlayContainerEl = this.overlayContainerServe.getContainerElement();
   }
+
   private listenResizeToCenter() {
     const modal = this.modalRef.nativeElement;
     const modalSize = this.getHideDomSize(modal);

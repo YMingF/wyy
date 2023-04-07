@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { SongSheet } from '../../../../service/data-types/common.types';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { LikeSongParams } from '../../../../service/member.service';
 
 @Component({
   selector: 'app-wy-layer-like',
@@ -21,7 +22,7 @@ export class WyLayerLikeComponent implements OnInit, OnChanges {
   @Input() mySheets: SongSheet[];
   @Input() likeId: string;
   @Input() visible: boolean;
-  @Output() onLikeSong = new EventEmitter<any>();
+  @Output() onLikeSong = new EventEmitter<LikeSongParams>();
   @Output() onCreateSheet = new EventEmitter<string>();
   creating = false;
   formModel: FormGroup;
