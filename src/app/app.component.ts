@@ -114,7 +114,6 @@ export class AppComponent {
   }
   // 收藏歌曲
   onLikeSong(args: LikeSongParams) {
-    console.log('onlikesong', args);
     this.memberServe.likeSong(args).subscribe(
       () => {
         this.batchActionServe.controlModal(false);

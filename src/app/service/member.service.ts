@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { API_CONFIG, ServiceModule } from './service.module';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { SampleBack, SongSheet } from './data-types/common.types';
+import { AnyJson, SampleBack, SongSheet } from './data-types/common.types';
 import { Observable } from 'rxjs';
 import {
   RecordVal,
@@ -127,6 +127,7 @@ export class MemberService {
       .get(this.url + 'playlist/tracks', { params })
       .pipe(map((res: SampleBack) => res.code));
   }
+
   // 新建歌单
   createSheet(name: string): Observable<string> {
     const params = new HttpParams({
@@ -135,5 +136,15 @@ export class MemberService {
     return this.http
       .get(this.url + 'playlist/create', { params })
       .pipe(map((res: SampleBack) => res.id.toString()));
+  }
+
+  //收藏歌单
+  likeSheet(id: string, t): Observable<number> {
+    const params = new HttpParams({
+      fromString: queryString.stringify({ id, t }),
+    });
+    return this.http
+      .get(this.url + 'playlist/subscribe', { params })
+      .pipe(map((res: AnyJson) => res.code));
   }
 }

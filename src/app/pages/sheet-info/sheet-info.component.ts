@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { map, takeUntil } from 'rxjs/internal/operators';
-import { AppStoreModule } from '../../store/index';
+import { AppStoreModule } from '../../store';
 import { select, Store } from '@ngrx/store';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { BatchActionsService } from '../../store/batch-actions.service';
 import { NzMessageService } from 'ng-zorro-antd';
 import { Singer, Song, SongSheet } from '../../service/data-types/common.types';
@@ -13,7 +13,8 @@ import {
   getPlayer,
 } from '../../store/selectors/player.selector';
 import { findSongIndex } from '../../utils/array';
-import { ModalTypes } from '../../store/reducers/member.reducer';
+import { MemberService } from '../../service/member.service';
+import { NzToolClass } from '../../utils/tools';
 
 @Component({
   selector: 'app-sheet-info',
@@ -37,14 +38,17 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
   currentSong: Song;
   currentIndex = -1;
   private destroy$ = new Subject<void>();
-  private appStore$: Observable<AppStoreModule>;
+  nzToolClass: NzToolClass;
   constructor(
     private route: ActivatedRoute,
     private store$: Store<AppStoreModule>,
     private songServe: SongService,
     private batchActionServe: BatchActionsService,
-    private nzMessageServe: NzMessageService
+    private nzMessageServe: NzMessageService,
+    private memberServe: MemberService,
+    private messageServe: NzMessageService
   ) {
+    this.nzToolClass = new NzToolClass(messageServe);
     this.route.data.pipe(map((res) => res.sheetInfo)).subscribe((res) => {
       this.sheetInfo = res;
       if (res.description) {
@@ -128,7 +132,19 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
   }
 
   // 收藏歌单
-  onLikeSheet(id: string) {}
+  onLikeSheet(id: string, subscribed) {
+    const t = subscribed ? 2 : 1;
+    const tip = subscribed ? '取消收藏' : '收藏';
+    this.memberServe.likeSheet(id, t).subscribe(
+      () => {
+        this.nzToolClass.alertMessage('success', `${tip}成功`);
+        this.sheetInfo.subscribed = !subscribed;
+      },
+      (error) => {
+        this.nzToolClass.alertMessage('error', error.msg || `${tip}失败`);
+      }
+    );
+  }
 
   // 收藏歌曲
   onLikeSong(id: string) {
@@ -145,8 +161,6 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
   ): string {
     return '';
   }
-
-  private alertMessage(type: string, msg: string) {}
 
   ngOnDestroy(): void {
     this.destroy$.next();
