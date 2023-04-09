@@ -32,11 +32,12 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
   @Input() wyRememberLogin: LoginParams;
   @Output() onChangeModalType = new EventEmitter<string | void>();
   @Output() onLogin = new EventEmitter<any>();
-  @Output() isSpinning = new EventEmitter<boolean>();
+  isSpinning = false;
   formModel: FormGroup;
   nzToolClass: NzToolClass;
   qrcodeImg: string;
   isScan = false;
+  codeExpire = false;
   constructor(
     private fb: FormBuilder,
     private store$: Store<AppStoreModule>,
@@ -51,7 +52,7 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
     const appStore$ = this.store$.pipe(select(selectMember));
     appStore$.pipe(select(getModalVisible)).subscribe((visible) => {
       if (visible) {
-        this.getQrCode();
+        this.generateQrCode();
       }
     });
     this.nzToolClass = new NzToolClass(this.messageServe);
@@ -59,7 +60,7 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
 
   ngOnInit() {}
 
-  getQrCode() {
+  generateQrCode() {
     const observe$ = this.memberServe
       .generateKey()
       .pipe(
@@ -85,7 +86,7 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
       )
       .subscribe((finalData) => {
         const { code } = finalData;
-        this.isScan = true;
+        this.isScan = code === 802;
         this.cdr.markForCheck();
         if ([800, 803].includes(code)) {
           const fnObj = {
@@ -101,13 +102,14 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
 
   handleCodeExpire() {
     this.nzToolClass.alertMessage('error', '二维码已过期!');
+    this.codeExpire = true;
   }
 
   getUserDetailByCookie(cookie: string) {
-    this.isSpinning.emit(true);
+    this.isSpinning = true;
     this.memberServe.getUserStatus(cookie).subscribe((res) => {
       this.onLogin.emit(res);
-      this.isSpinning.emit(false);
+      this.isSpinning = false;
     });
   }
 
@@ -117,6 +119,11 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
       password: [password, [Validators.required, Validators.minLength(6)]],
       remember: [remember],
     });
+  }
+
+  refreshCode() {
+    this.codeExpire = false;
+    this.generateQrCode();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

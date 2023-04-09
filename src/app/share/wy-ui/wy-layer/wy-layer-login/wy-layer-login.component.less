@@ -1,4 +1,4 @@
-@import "../../../../../assets/styles/mixins";
+@import '../../../../../assets/styles/mixins';
 .m-footer {
   padding: 0 19px;
   height: 48px;
@@ -22,7 +22,7 @@
     justify-content: center;
     align-items: center;
     .phoneAppImg {
-      .icon("../images/phoneApp.png",125px,220px);
+      .icon('../images/phoneApp.png', 125px, 220px);
       background-size: 120px 220px;
     }
     .codeImgBox {
@@ -35,11 +35,50 @@
       p {
         margin: 0;
       }
-      .codeImg {
-        width: 146px;
-        height: 146px;
-        padding: 4px;
-        margin: 13px 27px;
+
+      .codeImgWrapper {
+        position: relative;
+        width: 138px;
+        height: 138px;
+        margin: 13px auto;
+
+        .codeImg {
+          width: 128px;
+          height: 128px;
+        }
+
+        .refreshMask {
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          right: 0;
+          background: rgba(255, 255, 255, 0.9);
+          text-align: center;
+
+          p {
+            margin: 45px auto 8px;
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.8);
+            font-weight: 500;
+          }
+
+          .refreshCode {
+            margin: 0 auto;
+            display: block;
+            width: 64px;
+            height: 24px;
+            line-height: 24px;
+            border-radius: 4px;
+            background: linear-gradient(180deg, #81dd81 0%, #55a055 100%);
+            border: 1px solid #5baf5b;
+            font-size: 12px;
+            color: #fff;
+            padding: 2px 0;
+            box-sizing: content-box;
+            text-decoration: none;
+          }
+        }
       }
     }
   }
@@ -50,7 +89,7 @@
     align-items: center;
     justify-content: center;
     .scanningImg {
-      .icon("../images/scanOk.png",140px,140px);
+      .icon('../images/scanOk.png', 140px, 140px);
       background-size: 140px 140px;
     }
   }

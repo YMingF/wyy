@@ -81,12 +81,10 @@
   [visible]="visible"
   [currentModalType]="currentModalType"
   (onLoadMySheets)="onLoadMySheets()"
-  [isSpinning]='isSpinning'
 >
   <app-wy-layer-login
     name="login"
     (onLogin)='onLogin($event)'
-    (isSpinning)='isSpinning=$event'
     [wyRememberLogin]="wyRememberLogin"
     (onChangeModalType)="onChangeModalType($event)"
   ></app-wy-layer-login>
