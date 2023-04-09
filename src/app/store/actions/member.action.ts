@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ModalTypes } from '../reducers/member.reducer';
+import { ModalTypes, ShareInfo } from '../reducers/member.reducer';
 // createAction的参数1用来描述这个动作在干啥
 export const SetModalVisible = createAction(
   '[player] Set modal visible',
@@ -16,4 +16,8 @@ export const SetUserId = createAction(
 export const SetLikeId = createAction(
   '[player] SetLikeId',
   props<{ id: string }>()
+);
+export const SetShareInfo = createAction(
+  '[player] SetShareInfo',
+  props<{ info: ShareInfo }>()
 );

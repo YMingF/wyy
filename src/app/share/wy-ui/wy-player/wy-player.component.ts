@@ -16,7 +16,7 @@ import {
   getPlayMode,
   getSongList,
 } from '../../../store/selectors/player.selector';
-import { Song } from '../../../service/data-types/common.types';
+import { Singer, Song } from '../../../service/data-types/common.types';
 import {
   SetCurrentAction,
   SetCurrentIndex,
@@ -40,6 +40,7 @@ import {
   trigger,
 } from '@angular/animations';
 import { CurrentActions } from '../../../store/reducers/player.reducer';
+import { SetShareInfo } from '../../../store/actions/member.action';
 
 const modeTypes: PlayMode[] = [
   { type: 'loop', label: '循环' },
@@ -370,5 +371,23 @@ export class WyPlayerComponent implements OnInit {
     if (!this.isLocked && !this.animating) {
       this.showPlayer = type;
     }
+  }
+
+  // 收藏歌曲
+  onLikeSong(id: string) {
+    this.batchActionServe.likeSong(id);
+  }
+
+  // 分享
+  onShareSong(resource: Song, type = 'song') {
+    let txt = this.makeTxt('歌曲', resource.name, resource.ar);
+    this.store$.dispatch(
+      SetShareInfo({ info: { id: resource.id.toString(), type, txt } })
+    );
+  }
+
+  private makeTxt(type: string, name: string, makeBy: Singer[]): string {
+    let makeByStr = makeBy.map((item) => item.name).join('/');
+    return `${type}:${name}--${makeByStr}`;
   }
 }

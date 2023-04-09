@@ -6,7 +6,7 @@ import {
   SongSheet,
 } from './service/data-types/common.types';
 import { isEmptyObject, NzToolClass } from './utils/tools';
-import { ModalTypes } from './store/reducers/member.reducer';
+import { ModalTypes, ShareInfo } from './store/reducers/member.reducer';
 import { select, Store } from '@ngrx/store';
 import { AppStoreModule } from './store';
 import {
@@ -15,7 +15,11 @@ import {
   SetUserId,
 } from './store/actions/member.action';
 import { BatchActionsService } from './store/batch-actions.service';
-import { LikeSongParams, MemberService } from './service/member.service';
+import {
+  LikeSongParams,
+  MemberService,
+  ShareParams,
+} from './service/member.service';
 import { User } from './service/data-types/member.type';
 import { NzMessageService } from 'ng-zorro-antd';
 import { StorageService } from './service/storage.service';
@@ -24,6 +28,7 @@ import {
   getMember,
   getModalType,
   getModalVisible,
+  getShareInfo,
 } from './store/selectors/member.selector';
 
 @Component({
@@ -59,7 +64,7 @@ export class AppComponent {
 
   // 弹窗类型
   currentModalType = ModalTypes.Default;
-  isSpinning = false;
+  shareInfo: ShareInfo;
   constructor(
     private searchServe: SearchService,
     private memberServe: MemberService,
@@ -92,6 +97,9 @@ export class AppComponent {
     appStore$
       .pipe(select(getModalType))
       .subscribe((type) => this.watchModalType(type));
+    appStore$
+      .pipe(select(getShareInfo))
+      .subscribe((info) => this.watchShareInfo(info));
   }
   private watchModalVisible(visible: boolean) {
     if (this.visible !== visible) {
@@ -116,7 +124,7 @@ export class AppComponent {
   onLikeSong(args: LikeSongParams) {
     this.memberServe.likeSong(args).subscribe(
       () => {
-        this.batchActionServe.controlModal(false);
+        this.closeModal();
         this.nzToolClass.alertMessage('success', '收藏成功!');
       },
       (error) => {
@@ -136,16 +144,17 @@ export class AppComponent {
     );
   }
 
-  // private watchShareInfo(info: ShareInfo) {
-  //   if (info) {
-  //     if (this.user) {
-  //       this.shareInfo = info;
-  //       this.openModal(ModalTypes.Share);
-  //     } else {
-  //       this.openModal(ModalTypes.Default);
-  //     }
-  //   }
-  // }
+  private watchShareInfo(info: ShareInfo) {
+    if (info) {
+      if (this.user) {
+        this.shareInfo = info;
+        this.openModal(ModalTypes.Share);
+      } else {
+        this.openModal(ModalTypes.Default);
+      }
+    }
+  }
+
   //改变弹窗类型
   onChangeModalType(type = ModalTypes.Default) {
     this.store$.dispatch(SetModalType({ modalType: type }));
@@ -189,7 +198,7 @@ export class AppComponent {
     const { data: user } = userData;
     this.user = user;
     this.nzToolClass.alertMessage('success', '登陆成功!');
-    this.batchActionServe.controlModal(false);
+    this.closeModal();
     this.storageServe.setStorage({
       key: 'wyUserId',
       value: user.profile.userId,
@@ -225,4 +234,20 @@ export class AppComponent {
   }
 
   protected readonly ModalTypes = ModalTypes;
+
+  closeModal() {
+    this.batchActionServe.controlModal(false);
+  }
+
+  onShare(arg: ShareParams) {
+    this.memberServe.shareResource(arg).subscribe(
+      () => {
+        this.nzToolClass.alertMessage('success', '分享成功');
+        this.closeModal();
+      },
+      (error) => {
+        this.nzToolClass.alertMessage('error', error.msg || '分享失败');
+      }
+    );
+  }
 }

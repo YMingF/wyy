@@ -19,3 +19,7 @@ export const getLikeId = createSelector(
   selectMemberStates,
   (state: MemberState) => state.likeId
 );
+export const getShareInfo = createSelector(
+  selectMemberStates,
+  (state: MemberState) => state.shareInfo
+);

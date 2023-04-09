@@ -8,6 +8,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { WyLayerRegisterComponent } from './wy-layer-register/wy-layer-register.component';
 import { WyLayerLikeComponent } from './wy-layer-like/wy-layer-like.component';
+import { WyLayerShareComponent } from './wy-layer-share/wy-layer-share.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { WyLayerLikeComponent } from './wy-layer-like/wy-layer-like.component';
     WyLayerLoginComponent,
     WyLayerRegisterComponent,
     WyLayerLikeComponent,
+    WyLayerShareComponent,
   ],
   imports: [
     CommonModule,
@@ -30,6 +32,7 @@ import { WyLayerLikeComponent } from './wy-layer-like/wy-layer-like.component';
     WyLayerLoginComponent,
     WyLayerRegisterComponent,
     WyLayerLikeComponent,
+    WyLayerShareComponent,
   ],
 })
 export class WyLayerModule {}

@@ -15,6 +15,7 @@ import {
 import { findSongIndex } from '../../utils/array';
 import { MemberService } from '../../service/member.service';
 import { NzToolClass } from '../../utils/tools';
+import { SetShareInfo } from '../../store/actions/member.action';
 
 @Component({
   selector: 'app-sheet-info',
@@ -152,14 +153,34 @@ export class SheetInfoComponent implements OnInit, OnDestroy {
   }
 
   // 分享
-  shareResource(resource: Song | SongSheet, type = 'song') {}
+  shareResource(resource: Song | SongSheet, type = 'song') {
+    let txt;
+    if (type === 'playlist') {
+      txt = this.makeTxt(
+        '歌单',
+        resource.name,
+        (resource as SongSheet).creator.nickname
+      );
+    } else {
+      txt = this.makeTxt('歌曲', resource.name, (resource as Song).ar);
+    }
+    this.store$.dispatch(
+      SetShareInfo({ info: { id: resource.id.toString(), type, txt } })
+    );
+  }
 
   private makeTxt(
     type: string,
     name: string,
     makeBy: string | Singer[]
   ): string {
-    return '';
+    let makeByStr;
+    if (Array.isArray(makeBy)) {
+      makeByStr = makeBy.map((item) => item.name).join('/');
+    } else {
+      makeByStr = makeBy;
+    }
+    return `${type}:${name}--${makeByStr}`;
   }
 
   ngOnDestroy(): void {

@@ -11,7 +11,7 @@ import { BatchActionsService } from '../../../store/batch-actions.service';
 import { MemberService, RecordType } from '../../../service/member.service';
 import { SongService } from '../../../service/song.service';
 import { NzMessageService } from 'ng-zorro-antd';
-import { Song } from '../../../service/data-types/common.types';
+import { Singer, Song } from '../../../service/data-types/common.types';
 import { select, Store } from '@ngrx/store';
 import { AppStoreModule } from '../../../store';
 import {
@@ -21,6 +21,7 @@ import {
 import { takeUntil } from 'rxjs/internal/operators';
 import { findSongIndex } from '../../../utils/array';
 import { Subject } from 'rxjs';
+import { SetShareInfo } from '../../../store/actions/member.action';
 
 @Component({
   selector: 'app-center',
@@ -100,6 +101,22 @@ export class CenterComponent implements OnInit, OnDestroy {
       });
     }
   }
-  onLikeSong(e) {}
-  onShareSong(e) {}
+
+  // 收藏歌曲
+  onLikeSong(id: string) {
+    this.batchActionServe.likeSong(id);
+  }
+
+  // 分享
+  onShareSong(resource: Song, type = 'song') {
+    const txt = this.makeTxt('歌曲', resource.name, resource.ar);
+    this.store$.dispatch(
+      SetShareInfo({ info: { id: resource.id.toString(), type, txt } })
+    );
+  }
+
+  private makeTxt(type: string, name: string, makeBy: Singer[]): string {
+    const makeByStr = makeBy.map((item) => item.name).join('/');
+    return `${type}: ${name} -- ${makeByStr}`;
+  }
 }

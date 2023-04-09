@@ -1,9 +1,9 @@
 import {
-  Component,
-  OnInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  Component,
   OnDestroy,
+  OnInit,
 } from '@angular/core';
 
 import { ActivatedRoute } from '@angular/router';
@@ -24,6 +24,7 @@ import {
 } from '../../../store/selectors/player.selector';
 import { takeUntil } from 'rxjs/internal/operators';
 import { findSongIndex } from '../../../utils/array';
+import { SetShareInfo } from '../../../store/actions/member.action';
 
 @Component({
   selector: 'app-record-detail',
@@ -114,13 +115,15 @@ export class RecordDetailComponent implements OnInit, OnDestroy {
 
   // 收藏歌曲
   onLikeSong(id: string) {
-    // this.batchActionsServe.likeSong(id);
+    this.batchActionServe.likeSong(id);
   }
 
   // 分享
   onShareSong(resource: Song, type = 'song') {
     const txt = this.makeTxt('歌曲', resource.name, resource.ar);
-    // this.store$.dispatch(SetShareInfo({ info: { id: resource.id.toString(), type, txt } }));
+    this.store$.dispatch(
+      SetShareInfo({ info: { id: resource.id.toString(), type, txt } })
+    );
   }
 
   private makeTxt(type: string, name: string, makeBy: Singer[]): string {

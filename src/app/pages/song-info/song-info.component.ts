@@ -1,21 +1,25 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from "@angular/router";
-import { map } from "rxjs/operators";
-import { Song } from "../../service/data-types/common.types";
-import { WyLyric } from "../../share/wy-ui/wy-player/wy-player-panel/wy-lyric";
-import { SongService } from "../../service/song.service";
-import { select, Store } from "@ngrx/store";
-import { getCurrentSong, getPlayer } from "../../store/selectors/player.selector";
-import { takeUntil } from "rxjs/internal/operators";
-import { AppStoreModule } from "../../store";
-import { BatchActionsService } from "../../store/batch-actions.service";
-import { NzMessageService } from "ng-zorro-antd";
-import { Subject } from "rxjs";
+import { ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs/operators';
+import { Singer, Song } from '../../service/data-types/common.types';
+import { WyLyric } from '../../share/wy-ui/wy-player/wy-player-panel/wy-lyric';
+import { SongService } from '../../service/song.service';
+import { select, Store } from '@ngrx/store';
+import {
+  getCurrentSong,
+  getPlayer,
+} from '../../store/selectors/player.selector';
+import { takeUntil } from 'rxjs/internal/operators';
+import { AppStoreModule } from '../../store';
+import { BatchActionsService } from '../../store/batch-actions.service';
+import { NzMessageService } from 'ng-zorro-antd';
+import { Subject } from 'rxjs';
+import { SetShareInfo } from '../../store/actions/member.action';
 
 @Component({
   selector: 'app-song-info',
   templateUrl: './song-info.component.html',
-  styleUrls: ['./song-info.component.less']
+  styleUrls: ['./song-info.component.less'],
 })
 export class SongInfoComponent implements OnInit, OnDestroy {
   song: Song;
@@ -23,39 +27,41 @@ export class SongInfoComponent implements OnInit, OnDestroy {
   controlLyric = {
     isExpand: false,
     label: '展开',
-    iconCls: 'down'
+    iconCls: 'down',
   };
   currentSong: Song;
   private destroy$ = new Subject<void>();
 
-  constructor(private route: ActivatedRoute,
-              private store$: Store<AppStoreModule>,
-              private batchActionServe: BatchActionsService,
-              private nzMessageServe: NzMessageService,
-              private songServe: SongService,) {
-    this.route.data.pipe(map(res => res.songInfo)).subscribe(([song, lyric]) => {
-      this.song = song;
-      this.lyric = new WyLyric(lyric).lines;
-      this.listenCurrent();
-    })
-
+  constructor(
+    private route: ActivatedRoute,
+    private store$: Store<AppStoreModule>,
+    private batchActionServe: BatchActionsService,
+    private nzMessageServe: NzMessageService,
+    private songServe: SongService
+  ) {
+    this.route.data
+      .pipe(map((res) => res.songInfo))
+      .subscribe(([song, lyric]) => {
+        this.song = song;
+        this.lyric = new WyLyric(lyric).lines;
+        this.listenCurrent();
+      });
   }
 
   private listenCurrent() {
     // takeUntil(this.destroy$) 表示当this.destroy$发射流的时候停止监听
-    this.store$.pipe(
-      select(getPlayer),
-      select(getCurrentSong),
-      takeUntil(this.destroy$)).subscribe(song => {
-      this.currentSong = song;
-    });
+    this.store$
+      .pipe(select(getPlayer), select(getCurrentSong), takeUntil(this.destroy$))
+      .subscribe((song) => {
+        this.currentSong = song;
+      });
   }
 
   onAddSong(song: Song, isPlay = false) {
     // 当前没正播放歌曲，或播放歌曲和想添加的歌曲不同时，才允许添加歌曲
     if (!this.currentSong || this.currentSong.id !== song.id) {
       // 获取歌曲的url，因为原数据song里没有url
-      this.songServe.getSongList(song).subscribe(list => {
+      this.songServe.getSongList(song).subscribe((list) => {
         if (list.length) {
           this.batchActionServe.insertSong(list[0], isPlay);
         } else {
@@ -65,10 +71,22 @@ export class SongInfoComponent implements OnInit, OnDestroy {
     }
   }
 
-  onLikeSong() {
+  // 收藏歌曲
+  onLikeSong(id: string) {
+    this.batchActionServe.likeSong(id);
   }
 
-  onShareSong() {
+  // 分享
+  onShareSong(resource: Song, type = 'song') {
+    let txt = this.makeTxt('歌曲', resource.name, resource.ar);
+    this.store$.dispatch(
+      SetShareInfo({ info: { id: resource.id.toString(), type, txt } })
+    );
+  }
+
+  private makeTxt(type: string, name: string, makeBy: Singer[]): string {
+    let makeByStr = makeBy.map((item) => item.name).join('/');
+    return `${type}:${name}--${makeByStr}`;
   }
 
   toggleLyric() {
@@ -82,8 +100,7 @@ export class SongInfoComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngOnDestroy(): void {
     this.destroy$.next();

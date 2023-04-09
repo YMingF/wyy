@@ -3,6 +3,7 @@ import {
   SetLikeId,
   SetModalType,
   SetModalVisible,
+  SetShareInfo,
   SetUserId,
 } from '../actions/member.action';
 
@@ -14,11 +15,17 @@ export enum ModalTypes {
   Default = 'default',
 }
 
+export type ShareInfo = {
+  id: string;
+  type: string;
+  txt: string;
+};
 export type MemberState = {
   modalVisible: boolean;
   modalType: ModalTypes;
   userId: string;
   likeId: string;
+  shareInfo?: ShareInfo;
 };
 
 export const initialState: MemberState = {
@@ -37,7 +44,8 @@ const reducer = createReducer(
   })),
   on(SetModalType, (state, { modalType }) => ({ ...state, modalType })),
   on(SetUserId, (state, { id }) => ({ ...state, userId: id })),
-  on(SetLikeId, (state, { id }) => ({ ...state, likeId: id }))
+  on(SetLikeId, (state, { id }) => ({ ...state, likeId: id })),
+  on(SetShareInfo, (state, { info }) => ({ ...state, shareInfo: info }))
 );
 // 固定写法，只不过导出的函数名可以自己取
 export function memberReducer(state: MemberState, action: Action) {
