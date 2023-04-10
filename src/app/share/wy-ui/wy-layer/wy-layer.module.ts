@@ -9,6 +9,8 @@ import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { WyLayerRegisterComponent } from './wy-layer-register/wy-layer-register.component';
 import { WyLayerLikeComponent } from './wy-layer-like/wy-layer-like.component';
 import { WyLayerShareComponent } from './wy-layer-share/wy-layer-share.component';
+import { WyCheckCodeComponent } from './wy-check-code/wy-check-code.component';
+import { WyCodeComponent } from './wy-check-code/wy-code/wy-code.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +20,8 @@ import { WyLayerShareComponent } from './wy-layer-share/wy-layer-share.component
     WyLayerRegisterComponent,
     WyLayerLikeComponent,
     WyLayerShareComponent,
+    WyCheckCodeComponent,
+    WyCodeComponent,
   ],
   imports: [
     CommonModule,
@@ -33,6 +37,8 @@ import { WyLayerShareComponent } from './wy-layer-share/wy-layer-share.component
     WyLayerRegisterComponent,
     WyLayerLikeComponent,
     WyLayerShareComponent,
+    WyCheckCodeComponent,
+    WyCodeComponent,
   ],
 })
 export class WyLayerModule {}

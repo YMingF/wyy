@@ -51,6 +51,13 @@ import {
   ],
 })
 export class WyLayerModalComponent implements OnInit, AfterViewInit, OnChanges {
+  modalTitle = {
+    register: '注册',
+    loginByPhone: '手机登录',
+    share: '分享',
+    like: '收藏',
+    default: '',
+  };
   @Input() visible = false;
   @ViewChild('modalContainer', { static: false }) private modalRef: ElementRef;
   @Output() onLoadMySheets = new EventEmitter<void>();
@@ -58,7 +65,6 @@ export class WyLayerModalComponent implements OnInit, AfterViewInit, OnChanges {
   overlayRef: OverlayRef;
   showModal = 'hide';
   scrollStrategy: BlockScrollStrategy;
-  modalTitle: string;
   private overlayContainerEl: HTMLElement;
   private resizeHandler: () => void;
 

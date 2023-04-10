@@ -173,4 +173,34 @@ export class MemberService {
       .get(this.url + 'share/resource', { params })
       .pipe(map((res: AnyJson) => res.code));
   }
+
+  // 发送验证码
+  sendCode(phone: number): Observable<number> {
+    const params = new HttpParams({
+      fromString: queryString.stringify({ phone }),
+    });
+    return this.http
+      .get(this.url + 'captcha/sent', { params })
+      .pipe(map((res: SampleBack) => res.code));
+  }
+
+  // 校验验证码
+  checkCode(phone: number, captcha: number): Observable<number> {
+    const params = new HttpParams({
+      fromString: queryString.stringify({ phone, captcha }),
+    });
+    return this.http
+      .get(this.url + 'captcha/verify', { params })
+      .pipe(map((res: SampleBack) => res.code));
+  }
+
+  // 是否已注册
+  checkExist(phone: number): Observable<number> {
+    const params = new HttpParams({
+      fromString: queryString.stringify({ phone }),
+    });
+    return this.http
+      .get(this.url + 'cellphone/existence/check', { params })
+      .pipe(map((res: SampleBack) => res.exist));
+  }
 }

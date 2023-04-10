@@ -1,19 +1,20 @@
-<div class="m-layer"
-     cdkDrag
-     cdkDragBoundary=".cdk-overlay-container"
-     [@showHide]="showModal"
-     #modalContainer
-     >
-  <div cdkDragHandle class="zbar" >
-    {{modalTitle}}
-    <div class="zttl f-thide"></div>
+<div
+  class='m-layer'
+  cdkDrag
+  cdkDragBoundary='.cdk-overlay-container'
+  [@showHide]='showModal'
+  #modalContainer
+>
+  <div cdkDragHandle class='zbar'>
+    {{ modalTitle[currentModalType] }}
+    <div class='zttl f-thide'></div>
   </div>
-  <ng-container [ngSwitch]="currentModalType">
+  <ng-container [ngSwitch]='currentModalType'>
     <ng-container *ngSwitchCase="'loginByPhone'">
-      <ng-content select="[name=login]"></ng-content>
+      <ng-content select='[name=login]'></ng-content>
     </ng-container>
     <ng-container *ngSwitchCase="'register'">
-      <ng-content select="[name=register]"></ng-content>
+      <ng-content select='[name=register]'></ng-content>
     </ng-container>
     <ng-container *ngSwitchCase="'like'">
       <ng-content select="[name=like]"></ng-content>
@@ -25,5 +26,5 @@
       <ng-content></ng-content>
     </ng-container>
   </ng-container>
-  <div class="zcls" title="关闭" (click)="hide()" ></div>
+  <div class='zcls' title='关闭' (click)='hide()'></div>
 </div>

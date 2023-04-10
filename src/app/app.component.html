@@ -81,10 +81,13 @@
 </div>
 <app-wy-player></app-wy-player>
 <app-wy-layer-modal
-  [visible]="visible"
-  [currentModalType]="currentModalType"
-  (onLoadMySheets)="onLoadMySheets()"
+  [visible]='visible'
+  [currentModalType]='currentModalType'
+  (onLoadMySheets)='onLoadMySheets()'
 >
+  <app-wy-layer-default
+    (onChangeModalType)='onChangeModalType($event)'
+  ></app-wy-layer-default>
   <app-wy-layer-login
     name='login'
     [visible]='visible'
@@ -93,10 +96,12 @@
     (onChangeModalType)='onChangeModalType($event)'
   ></app-wy-layer-login>
   <!--  注册页面-->
-  <app-wy-layer-register name="register"></app-wy-layer-register>
-  <app-wy-layer-default
+  <app-wy-layer-register
+    name='register'
+    [visible]='visible'
     (onChangeModalType)='onChangeModalType($event)'
-  ></app-wy-layer-default>
+  ></app-wy-layer-register>
+
   <app-wy-layer-like
     name='like'
     [visible]='visible'
