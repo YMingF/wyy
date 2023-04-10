@@ -64,9 +64,6 @@ export class AppComponent {
   // 弹窗显示
   visible = false;
 
-  // 弹窗loading
-  showSpin = false;
-
   // 弹窗类型
   currentModalType = ModalTypes.Default;
   shareInfo: ShareInfo;
