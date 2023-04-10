@@ -14,13 +14,19 @@ import { LoginParams } from '../../../../service/data-types/common.types';
 import { codeJson } from '../../../../utils/base64';
 import { NzToolClass } from '../../../../utils/tools';
 import { NzMessageService } from 'ng-zorro-antd';
-import { mergeMap, switchMap } from 'rxjs/operators';
+import { mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import { forkJoin, interval, Observable, of } from 'rxjs';
 import { MemberService } from '../../../../service/member.service';
 import { createSelector, select, Store } from '@ngrx/store';
-import { getModalVisible } from '../../../../store/selectors/member.selector';
+import {
+  getModalType,
+  getModalVisible,
+} from '../../../../store/selectors/member.selector';
 import { AppStoreModule } from '../../../../store';
-import { MemberState } from '../../../../store/reducers/member.reducer';
+import {
+  MemberState,
+  ModalTypes,
+} from '../../../../store/reducers/member.reducer';
 
 @Component({
   selector: 'app-wy-layer-login',
@@ -50,11 +56,21 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
       (member) => member
     );
     const appStore$ = this.store$.pipe(select(selectMember));
-    appStore$.pipe(select(getModalVisible)).subscribe((visible) => {
-      if (visible) {
-        this.generateQrCode();
-      }
-    });
+    // 同时获取弹窗是否可见，以及当前弹窗的类型，只有当是手机登录界面的时候，才去获取二维码
+    appStore$
+      .pipe(
+        mergeMap(() =>
+          appStore$.pipe(
+            select(getModalVisible),
+            withLatestFrom(appStore$.pipe(select(getModalType)))
+          )
+        )
+      )
+      .subscribe(([visible, modalType]) => {
+        if (visible && modalType === ModalTypes.LoginByPhone) {
+          this.generateQrCode();
+        }
+      });
     this.nzToolClass = new NzToolClass(this.messageServe);
   }
 

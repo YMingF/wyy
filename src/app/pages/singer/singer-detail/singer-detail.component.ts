@@ -19,6 +19,8 @@ import { findSongIndex } from '../../../utils/array';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SetShareInfo } from '../../../store/actions/member.action';
+import { MemberService } from '../../../service/member.service';
+import { NzToolClass } from '../../../utils/tools';
 
 @Component({
   selector: 'app-singer-detail',
@@ -30,14 +32,17 @@ export class SingerDetailComponent implements OnInit, OnDestroy {
   currentIndex = -1;
   currentSong: Song;
   simiSingers: Singer[];
+  hasLiked = false;
   private destroy$ = new Subject<void>();
-
+  nzToolClass: NzToolClass;
   constructor(
     private route: ActivatedRoute,
     private store$: Store<AppStoreModule>,
     private songServe: SongService,
     private batchActionServe: BatchActionsService,
-    private nzMessageServe: NzMessageService
+    private nzMessageServe: NzMessageService,
+    private memberServe: MemberService,
+    private messageServe: NzMessageService
   ) {
     this.route.data
       .pipe(map((res) => res.singerDetail))
@@ -46,6 +51,7 @@ export class SingerDetailComponent implements OnInit, OnDestroy {
         this.simiSingers = simiSingers;
         this.listenCurrent();
       });
+    this.nzToolClass = new NzToolClass(this.messageServe);
   }
 
   private listenCurrent() {
@@ -104,6 +110,38 @@ export class SingerDetailComponent implements OnInit, OnDestroy {
   private makeTxt(type: string, name: string, makeBy: Singer[]): string {
     const makeByStr = makeBy.map((item) => item.name).join('/');
     return `${type}: ${name} -- ${makeByStr}`;
+  }
+
+  // 批量收藏
+  onLikeSongs(songs: Song[]) {
+    const ids = songs.map((item) => item.id).join(',');
+    this.onLikeSong(ids);
+  }
+
+  //收藏歌手
+  onLikeSinger(id: number) {
+    let typeInfo = {
+      type: 1,
+      msg: '收藏',
+    };
+    if (this.hasLiked) {
+      typeInfo = {
+        type: 2,
+        msg: '取消收藏',
+      };
+    }
+    this.memberServe.likeSinger(id.toString(), typeInfo.type).subscribe(
+      () => {
+        this.hasLiked = !this.hasLiked;
+        this.nzToolClass.alertMessage('success', typeInfo.msg + '成功');
+      },
+      (error) => {
+        this.nzToolClass.alertMessage(
+          'error',
+          error.msg || typeInfo.msg + '失败'
+        );
+      }
+    );
   }
 
   ngOnInit() {}
