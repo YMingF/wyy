@@ -60,12 +60,8 @@ export class WyLayerLoginComponent implements OnInit, OnChanges {
     // 同时获取弹窗是否可见，以及当前弹窗的类型，只有当是手机登录界面的时候，才去获取二维码
     appStore$
       .pipe(
-        mergeMap(() =>
-          appStore$.pipe(
-            select(getModalVisible),
-            withLatestFrom(appStore$.pipe(select(getModalType)))
-          )
-        )
+        select(getModalVisible),
+        withLatestFrom(appStore$.pipe(select(getModalType)))
       )
       .subscribe(([visible, modalType]) => {
         if (visible && modalType === ModalTypes.LoginByPhone) {
