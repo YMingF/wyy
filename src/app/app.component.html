@@ -5,7 +5,7 @@
         <div class="left">
           <h1 [routerLink]="['/home']">Music</h1>
           <ul nz-menu nzTheme="dark" nzMode="horizontal">
-            <li nz-menu-item *ngFor="let item of menu" [routerLink]="item.path">
+            <li [nzSelected]='routeTitle===item.label' nz-menu-item *ngFor='let item of menu' [routerLink]='item.path'>
               {{ item.label }}
             </li>
           </ul>

@@ -30,6 +30,11 @@ import {
   getModalVisible,
   getShareInfo,
 } from './store/selectors/member.selector';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { filter, mergeMap } from 'rxjs/internal/operators';
+import { map } from 'rxjs/operators';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -65,13 +70,21 @@ export class AppComponent {
   // 弹窗类型
   currentModalType = ModalTypes.Default;
   shareInfo: ShareInfo;
+
+  // 标题
+  routeTitle: string;
+  private navEnd: Observable<NavigationEnd>;
+
   constructor(
     private searchServe: SearchService,
     private memberServe: MemberService,
     private store$: Store<AppStoreModule>,
     private batchActionServe: BatchActionsService,
     private messageServe: NzMessageService,
-    private storageServe: StorageService
+    private storageServe: StorageService,
+    private router: Router,
+    private activateRoute: ActivatedRoute,
+    private titleServe: Title
   ) {
     this.nzToolClass = new NzToolClass(messageServe);
     const userId = this.storageServe.getStorage('wyUserId');
@@ -87,7 +100,32 @@ export class AppComponent {
       this.wyRememberLogin = JSON.parse(wyRememberLogin);
     }
     this.listenStates();
+    // 从路由的所有事件中筛选出NavigationEnd事件
+    this.navEnd = this.router.events.pipe(
+      filter((evt) => evt instanceof NavigationEnd)
+    ) as Observable<NavigationEnd>;
+    this.setTitle();
   }
+
+  setTitle() {
+    this.navEnd
+      .pipe(
+        map(() => this.activateRoute), // 转成ActivatedRoute类型
+        map((route: ActivatedRoute) => {
+          while (route.firstChild) {
+            // 若此路由下有多个子路由，则只获取第一个子路由
+            route = route.firstChild;
+          }
+          return route;
+        }),
+        mergeMap((route) => route.data)
+      )
+      .subscribe((data) => {
+        this.routeTitle = data['title'];
+        this.titleServe.setTitle(this.routeTitle);
+      });
+  }
+
   private listenStates() {
     const appStore$ = this.store$.pipe(select(getMember));
     appStore$.pipe(select(getLikeId)).subscribe((id) => this.watchLikeId(id));
