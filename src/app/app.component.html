@@ -86,10 +86,11 @@
   (onLoadMySheets)="onLoadMySheets()"
 >
   <app-wy-layer-login
-    name="login"
+    name='login'
+    [visible]='visible'
+    [wyRememberLogin]='wyRememberLogin'
     (onLogin)='onLogin($event)'
-    [wyRememberLogin]="wyRememberLogin"
-    (onChangeModalType)="onChangeModalType($event)"
+    (onChangeModalType)='onChangeModalType($event)'
   ></app-wy-layer-login>
   <!--  注册页面-->
   <app-wy-layer-register name="register"></app-wy-layer-register>
@@ -106,6 +107,7 @@
   ></app-wy-layer-like>
   <app-wy-layer-share
     name='share'
+    [visible]='visible'
     [shareInfo]='shareInfo'
     (onCancel)='closeModal()'
     (onShare)='onShare($event)'

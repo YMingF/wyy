@@ -145,14 +145,13 @@ export class AppComponent {
   }
 
   private watchShareInfo(info: ShareInfo) {
-    if (info) {
-      if (this.user) {
-        this.shareInfo = info;
-        this.openModal(ModalTypes.Share);
-      } else {
-        this.openModal(ModalTypes.Default);
-      }
+    if (!info) {
+      return;
     }
+    if (this.user) {
+      this.shareInfo = info;
+    }
+    this.openModal(this.user ? ModalTypes.Share : ModalTypes.Default);
   }
 
   //改变弹窗类型
