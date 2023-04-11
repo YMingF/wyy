@@ -7,7 +7,7 @@
         (nzBeforeChange)="OnBeforeChange($event)">
       <div class="carousel-item" nz-carousel-content *ngFor="let item of banners">
         <a [href]="item.url" target="_blank" class="banner-item">
-          <img alt="" appImgDefault [src]="item.imageUrl"/>
+          <img alt='' ImgDefault [src]='item.imageUrl' />
         </a>
       </div>
     </nz-carousel>
@@ -55,7 +55,7 @@
           <div class="list">
             <div class="card" *ngFor="let item of singers" [routerLink]="['/singer',item.id]">
               <div class="pic">
-                <img [src]="item.picUrl" [alt]="item.name">
+                <img [src]='item.picUrl' ImgDefault [alt]='item.name'>
               </div>
               <div class="txt">
                 <b class="ellipsis">{{item.name}}</b>

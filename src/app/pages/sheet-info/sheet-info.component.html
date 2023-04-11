@@ -2,7 +2,7 @@
   <div class="g-wrap6">
     <div class="m-info clearfix">
       <div class="cover">
-        <img [src]='sheetInfo.coverImgUrl' [alt]='sheetInfo.name' />
+        <img ImgDefault [src]='sheetInfo.coverImgUrl' [alt]='sheetInfo.name' />
         <div class="mask"></div>
       </div>
       <div class='cnt'>
@@ -20,9 +20,9 @@
               [hidden]='!sheetInfo.creator'
               [href]="'//music.163.com/artist?id=' + sheetInfo.userId"
             >
-              <img
-                [src]='sheetInfo.creator?.avatarUrl'
-                [alt]='sheetInfo.creator?.nickname'
+              <img ImgDefault
+                   [src]='sheetInfo.creator?.avatarUrl'
+                   [alt]='sheetInfo.creator?.nickname'
               />
             </a>
             <span class='name'>
