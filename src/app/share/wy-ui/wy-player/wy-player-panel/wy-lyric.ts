@@ -1,10 +1,10 @@
-import {Lyric} from '../../../../service/data-types/common.types';
-import {from, Subject, Subscription, timer, zip} from 'rxjs';
-import {skip} from 'rxjs/operators';
+import { Lyric } from '../../../../service/data-types/common.types';
+import { from, Subject, Subscription, timer, zip } from 'rxjs';
+import { skip } from 'rxjs/operators';
 
 interface BaseLyricLine {
-  txt: string,
-  txtCn: string,
+  txt: string;
+  txtCn: string;
 }
 
 export interface LyricLine extends BaseLyricLine {
@@ -15,11 +15,11 @@ interface Handler extends BaseLyricLine {
   lineNum: number; // 当前歌词的行索引
 }
 // 匹配歌词的时间前缀[00:09]或[00:09.021]或[00:09.32]
-const timeExp = /\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?\]/;
+const timeExp = /\[(\d{1,2}):(\d{2})(?:\.(\d{2,3}))?\]/;
 
 export class WyLyric {
   private lrc: Lyric;
-  lines: LyricLine[] = [];// 处理之后的歌词
+  lines: LyricLine[] = []; // 处理之后的歌词
   private playing = false;
   private curNum: number;
   startStamp: number;
@@ -43,7 +43,7 @@ export class WyLyric {
 
   private generateLyric() {
     const lines = this.lrc.lyric.split('\n');
-    lines.forEach(line => this.makeLine(line));
+    lines.forEach((line) => this.makeLine(line));
   }
   /* 含有中文翻译的歌词处理逻辑
   总目标：要让英文和中文同一时间点的歌词一一对应
@@ -56,7 +56,9 @@ export class WyLyric {
   private generateTLyric() {
     const lines = this.lrc.lyric.split('\n');
     // 只留下以时间开头的字符，方便后续和lyric同时间的字符对应起来
-    const tlines = this.lrc.tlyric.split('\n').filter(item => timeExp.exec(item) !== null);
+    const tlines = this.lrc.tlyric
+      .split('\n')
+      .filter((item) => timeExp.exec(item) !== null);
     let tempArr;
     const lineLenDiff = lines.length - tlines.length;
     if (lineLenDiff >= 0) {
@@ -73,7 +75,7 @@ export class WyLyric {
         break;
       }
     }
-    tempArr[0].slice(0, skipIndex).forEach(item => this.makeLine(item));
+    tempArr[0].slice(0, skipIndex).forEach((item) => this.makeLine(item));
     let zipLines$;
     if (lineLenDiff > 0) {
       // skip() 这里过滤掉的就是长出来的那部分歌名和歌手信息
@@ -93,8 +95,9 @@ export class WyLyric {
       const txtCn = tLine ? tLine.replace(timeExp, '').trim() : '';
       if (txt) {
         let millSecond = parseFloat(res[3].padEnd(3, '0')); // 毫秒位置的数据或2位或3位，这里统一成3位
-        const time = Number(res[1]) * 60 * 1000 + Number(res[2]) * 1000 + millSecond;
-        this.lines.push({txt, txtCn, time});
+        const time =
+          Number(res[1]) * 60 * 1000 + Number(res[2]) * 1000 + millSecond;
+        this.lines.push({ txt, txtCn, time });
       }
     }
   }
@@ -117,7 +120,6 @@ export class WyLyric {
       this.clearTimer();
       this.playReset();
     }
-
   }
 
   private playReset() {
@@ -135,20 +137,18 @@ export class WyLyric {
     this.timer$ && this.timer$.unsubscribe();
   }
 
-
   private callHandler(i: number) {
     if (i > 0) {
       this.handler.next({
         txt: this.lines[i].txt,
         txtCn: this.lines[i].txtCn,
-        lineNum: i
+        lineNum: i,
       });
     }
   }
 
-
   private findCurNum(time: number): number {
-    const index = this.lines.findIndex(item => time <= item.time);
+    const index = this.lines.findIndex((item) => time <= item.time);
     return index === -1 ? this.lines.length - 1 : index;
   }
 

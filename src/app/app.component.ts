@@ -30,9 +30,14 @@ import {
   getModalVisible,
   getShareInfo,
 } from './store/selectors/member.selector';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { filter, mergeMap } from 'rxjs/internal/operators';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  NavigationStart,
+  Router,
+} from '@angular/router';
+import { interval, Observable } from 'rxjs';
+import { filter, mergeMap, takeUntil } from 'rxjs/internal/operators';
 import { map } from 'rxjs/operators';
 import { Title } from '@angular/platform-browser';
 
@@ -71,7 +76,7 @@ export class AppComponent {
   // 标题
   routeTitle: string;
   private navEnd: Observable<NavigationEnd>;
-
+  loadPercent = 0;
   constructor(
     private searchServe: SearchService,
     private memberServe: MemberService,
@@ -97,11 +102,29 @@ export class AppComponent {
       this.wyRememberLogin = JSON.parse(wyRememberLogin);
     }
     this.listenStates();
+    // 导航开始时进行操作
+    this.router.events
+      .pipe(filter((evt) => evt instanceof NavigationStart))
+      .subscribe(() => {
+        this.loadPercent = 0;
+        this.setTitle();
+      });
     // 从路由的所有事件中筛选出NavigationEnd事件
     this.navEnd = this.router.events.pipe(
       filter((evt) => evt instanceof NavigationEnd)
     ) as Observable<NavigationEnd>;
-    this.setTitle();
+    this.setLoadingBar();
+  }
+
+  private setLoadingBar() {
+    interval(100)
+      .pipe(takeUntil(this.navEnd))
+      .subscribe(() => {
+        this.loadPercent = Math.min(++this.loadPercent, 95);
+      });
+    this.navEnd.subscribe(() => {
+      this.loadPercent = 100;
+    });
   }
 
   setTitle() {

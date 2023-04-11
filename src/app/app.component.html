@@ -1,10 +1,12 @@
-<div id="app">
-  <nz-layout class="layout">
-    <nz-header class="header">
-      <div class="wrap">
-        <div class="left">
+<div id='app'>
+  <nz-progress *ngIf='loadPercent<100' nzStrokeWidth='5' [nzShowInfo]='false' nzStatus='active'
+               [nzPercent]='loadPercent'></nz-progress>
+  <nz-layout class='layout'>
+    <nz-header class='header'>
+      <div class='wrap'>
+        <div class='left'>
           <h1 [routerLink]="['/home']">Music</h1>
-          <ul nz-menu nzTheme="dark" nzMode="horizontal">
+          <ul nz-menu nzTheme='dark' nzMode='horizontal'>
             <li [nzSelected]='routeTitle===item.label' nz-menu-item *ngFor='let item of menu' [routerLink]='item.path'>
               {{ item.label }}
             </li>
