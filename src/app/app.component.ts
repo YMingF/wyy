@@ -122,6 +122,7 @@ export class AppComponent {
       .subscribe(() => {
         this.loadPercent = Math.min(++this.loadPercent, 95);
       });
+    // 导航结束事件发生的时候会发出一个流，可用subscribe进行监听
     this.navEnd.subscribe(() => {
       this.loadPercent = 100;
     });

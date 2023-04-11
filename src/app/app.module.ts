@@ -6,7 +6,11 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { FormsModule } from '@angular/forms';
-import { NzAvatarModule, NzProgressModule } from 'ng-zorro-antd';
+import {
+  NzAvatarModule,
+  NzBackTopModule,
+  NzProgressModule,
+} from 'ng-zorro-antd';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,6 +23,7 @@ import { NzAvatarModule, NzProgressModule } from 'ng-zorro-antd';
     FormsModule,
     NzAvatarModule,
     NzProgressModule,
+    NzBackTopModule,
   ],
   bootstrap: [AppComponent],
 })
