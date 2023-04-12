@@ -1,15 +1,13 @@
-import { Injectable } from '@angular/core'
 import {
   HttpErrorResponse,
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-} from '@angular/common/http'
-import { Observable } from 'rxjs'
-import { catchError } from 'rxjs/operators'
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
-@Injectable()
 export class CommonInterceptor implements HttpInterceptor {
   intercept(
     req: HttpRequest<any>,
@@ -21,10 +19,10 @@ export class CommonInterceptor implements HttpInterceptor {
           withCredentials: true,
         })
       )
-      .pipe(catchError(this.handleError))
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse): never {
-    throw error.error
+    throw error.error;
   }
 }

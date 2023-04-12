@@ -291,7 +291,7 @@ export class AppComponent {
     }
   }
 
-  protected readonly ModalTypes = ModalTypes;
+  readonly ModalTypes = ModalTypes;
 
   closeModal() {
     this.batchActionServe.controlModal(false);
