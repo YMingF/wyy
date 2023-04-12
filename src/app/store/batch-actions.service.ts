@@ -57,7 +57,7 @@ export class BatchActionsService {
   // 添加歌曲
   insertSong(song: Song, isPlay: boolean) {
     const songList = this.playerState.songList.slice();
-    const playList = this.playerState.playList.slice();
+    let playList = this.playerState.playList.slice();
     let insertIndex = this.playerState.currentIndex;
     const pIndex = findSongIndex(playList, song);
     if (pIndex > -1) {
@@ -67,7 +67,11 @@ export class BatchActionsService {
       }
     } else {
       songList.push(song);
-      playList.push(song);
+      if (this.playerState.playMode.type === 'random') {
+        playList = shuffle(songList);
+      } else {
+        playList.push(song);
+      }
       if (isPlay) {
         insertIndex = songList.length - 1;
       }
@@ -116,17 +120,21 @@ export class BatchActionsService {
 
   //  添加多首歌曲
   insertSongs(songs: Song[]) {
-    const songList = this.playerState.songList.slice();
-    const playList = this.playerState.playList.slice();
-    songs.forEach((item) => {
-      const pIndex = findSongIndex(playList, item);
-      if (pIndex === -1) {
-        songList.push(item);
-        playList.push(item);
+    let songList = this.playerState.songList.slice();
+    let playList = this.playerState.playList.slice();
+    const validSongs = songs.filter(
+      (item) => findSongIndex(playList, item) === -1
+    );
+    if (validSongs.length) {
+      songList = songList.concat(validSongs);
+      let songPlayList = validSongs.slice();
+      if (this.playerState.playMode.type === 'random') {
+        songPlayList = shuffle(songList);
       }
-    });
-    this.store$.dispatch(SetSongList({ songList }));
-    this.store$.dispatch(SetPlayList({ playList }));
+      playList = playList.concat(songPlayList);
+      this.store$.dispatch(SetSongList({ songList }));
+      this.store$.dispatch(SetPlayList({ playList }));
+    }
     this.store$.dispatch(
       SetCurrentAction({ currentAction: CurrentActions.Add })
     );
