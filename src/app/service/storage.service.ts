@@ -1,13 +1,10 @@
-import { Inject, Injectable } from '@angular/core';
-import { WINDOW } from './service.module';
+import { Injectable } from '@angular/core';
 import { AnyJson } from './data-types/common.types';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StorageService {
-  constructor(@Inject(WINDOW) private win: Window) {}
-
   getStorage(key: string, type = 'local'): string {
     return window[type + 'Storage'] && window[type + 'Storage'].getItem(key);
   }

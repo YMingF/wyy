@@ -28,7 +28,6 @@ import { BatchActionsService } from 'src/app/store/batch-actions.service';
 import { ModalTypes } from '../../../../store/reducers/member.reducer';
 import { APOSTROPHE } from '@angular/cdk/keycodes';
 import { DOCUMENT } from '@angular/common';
-import { WINDOW } from '../../../../service/service.module';
 import {
   animate,
   state,
@@ -77,7 +76,6 @@ export class WyLayerModalComponent implements OnInit, AfterViewInit, OnChanges {
     private batchActionServe: BatchActionsService,
     private rd: Renderer2,
     @Inject(DOCUMENT) private doc: Document,
-    @Inject(WINDOW) private win: Window,
     private overlayContainerServe: OverlayContainer
   ) {
     this.scrollStrategy = this.overlay.scrollStrategies.block();
@@ -117,11 +115,11 @@ export class WyLayerModalComponent implements OnInit, AfterViewInit, OnChanges {
   getWindowSize() {
     return {
       w:
-        this.win.innerWidth ||
+        window.innerWidth ||
         this.doc.documentElement.clientWidth ||
         this.doc.body.offsetWidth,
       h:
-        this.win.innerHeight ||
+        window.innerHeight ||
         this.doc.documentElement.clientHeight ||
         this.doc.body.offsetHeight,
     };
